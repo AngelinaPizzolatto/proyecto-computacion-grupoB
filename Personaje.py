@@ -12,7 +12,7 @@ class Personaje():
         return self.salud > 0
     
     def atacar(self, objetivo):
-        danio = max(self.fuerza - objetivo.defensa //2,1)
+        danio = max(self.fuerza - (objetivo.defensa //2), 1)
         objetivo.recibir_danio(danio)
         return danio
     
@@ -21,7 +21,7 @@ class Personaje():
         
     def ganar_experiencia(self, cantidad):
         self.experiencia += cantidad
-        while self.experiencia >= self._experiencia_para_subir():
+        while self.experiencia >= self.experiencia_para_subir():
             self.subir_nivel()
     
     def experiencia_para_subir(self):

@@ -1,0 +1,38 @@
+@startuml Juego
+
+class Personaje {
+    +str nombre
+    +int salud
+    +int salud_max
+    +int fuerza
+    +int defensa
+    +int nivel
+    +int experiencia
+    +vive()
+    +atacar(objetivo)
+    +recibir_danio(danio)
+    +ganar_experiencia(cantidad)
+    -subir_nivel()
+}
+
+class Rescatista
+class Instructor
+class Rider {
+}
+
+class Enemigo {
+    +int experiencia_otorgada
+    +str item_posible
+}
+
+class Yeti {
+    +bool fase_avalancha
+}
+
+Personaje <|-- Rescatista
+Personaje <|-- Instructor
+Personaje <|-- Rider
+Personaje <|-- Enemigo
+Personaje <|-- Yeti
+
+@enduml
