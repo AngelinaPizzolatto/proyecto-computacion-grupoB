@@ -2,9 +2,9 @@ import random
 from Personaje import Personaje
 
 class Enemigo(Personaje):
-    def __init__(self,nombre,salud,fuerza,defensa, experienci_asignada,algun_item):
-        super.__init__(nombre,salud,fuerza,defensa)
-        self.experiencia_asignada = experienci_asignada
+    def __init__(self, nombre, salud, fuerza, defensa, experiencia_asignada, algun_item = None):
+        super().__init__(nombre, salud, fuerza, defensa)
+        self.experiencia_asignada = experiencia_asignada
         self.algun_item = algun_item
         
 ENEMIGOS = {
@@ -39,6 +39,6 @@ class Yeti(Personaje):
         self.fase_avalancha = False
         
     def recibir_danio(self, danio):
-        super().recibir_daño(danio)
+        super().recibir_danio(danio)
         if self.salud <= self.salud_max // 2 and not self.fase_avalancha:
             self.fase_avalancha = True
