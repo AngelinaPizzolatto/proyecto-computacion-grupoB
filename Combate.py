@@ -1,5 +1,5 @@
 class Combate:
-    def _init_(self, equipo, enemigo):
+    def __init__(self, equipo, enemigo):
         self.equipo = equipo
         self.enemigo = enemigo
  
