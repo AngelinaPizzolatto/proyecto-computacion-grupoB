@@ -1,5 +1,12 @@
 @startuml Juego
 
+skinparam linetype ortho
+skinparam nodesep 80
+skinparam ranksep 60
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam roundcorner 8
+
 class Personaje {
     +str nombre
     +int salud
@@ -27,6 +34,69 @@ class Enemigo {
 
 class Yeti {
     +bool fase_avalancha
+    +recibir_danio(danio)
+}
+
+class Item {
+    +str nombre
+    +str descripcion
+    +aplicar(personaje)
+    +info() : str
+}
+
+class ItemConsumible {
+    +int cantidad_salud
+    +aplicar(personaje)
+}
+
+class ItemPermanente {
+    +str atributo
+    +int cantidad
+    +aplicar(personaje)
+}
+
+class Combate {
+    +list equipo
+    +Personaje enemigo
+    +turno_jugador(personaje, objetivo)
+    +turno_enemigo()
+    +combate_terminado() : bool
+}
+
+class Mochila {
+    -list items
+    +guardar(item)
+    +sacar_ultimo() : Item
+    +esta_vacia() : bool
+}
+
+class Emboscada {
+    -list enemigos
+    +sumar(enemigo)
+    +sacar_primero() : Personaje
+    +esta_vacia() : bool
+}
+
+class Sector {
+    +str nombre
+    +str narracion
+    +Emboscada enemigos
+    +Personaje jefe
+    +Sector siguiente
+    +generar_enemigos(cantidad)
+    +siguiente_enemigo() : Personaje
+    +quedan_enemigos() : bool
+}
+
+class Main {
+    +list equipo
+    +Sector sector_actual
+    +Mochila mochila
+    +iniciar()
+    +jugar_sector(sector)
+    +repartir_experiencia(cantidad)
+    +usar_item(personaje)
+    +reiniciar()
 }
 
 Personaje <|-- Rescatista
@@ -34,5 +104,22 @@ Personaje <|-- Instructor
 Personaje <|-- Rider
 Personaje <|-- Enemigo
 Personaje <|-- Yeti
+
+Item <|-- ItemConsumible
+Item <|-- ItemPermanente
+
+Enemigo "1" --> "0..1" Item : algun_item
+Item ..> Personaje : modifica
+Combate "1" o-- "3" Personaje : equipo
+Combate "1" --> "1" Personaje : enemigo
+Sector "1" *-- "1" Emboscada : enemigos
+Emboscada "1" o-- "*" Personaje : contiene
+Sector "1" --> "1" Personaje : jefe
+Sector "1" --> "0..1" Sector : siguiente
+Main "1" o-- "3" Personaje : equipo
+Main "1" --> "1" Sector : sector_actual
+Main "1" *-- "1" Mochila : mochila
+Mochila "1" o-- "*" Item : contiene
+Main ..> Combate : crea
 
 @enduml
