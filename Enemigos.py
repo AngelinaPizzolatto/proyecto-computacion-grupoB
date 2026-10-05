@@ -1,11 +1,19 @@
 import random
 from Personaje import Personaje
+from Item import *
+from Mochila import *
 
 class Enemigo(Personaje):
     def __init__(self, nombre, salud, fuerza, defensa, experiencia_asignada, algun_item = None):
         super().__init__(nombre, salud, fuerza, defensa)
         self.experiencia_asignada = experiencia_asignada
         self.algun_item = algun_item
+        
+    def get_algun_item(self):
+        return self.algun_item
+    
+    def set_algun_item(self, algun_item):
+        return algun_item
         
 ENEMIGOS = {
     #Después tenemos que cambiarle el nombre al diccionario de enemigos
@@ -30,7 +38,12 @@ def generar_enemigo(pista):
     fuerza = random.randint(*rango_fuerza)
     defensa = random.randint(*rango_defensa)
     experiencia = salud // 4
-    return Enemigo(nombre, salud, fuerza, defensa, experiencia)
+    item_drop = random.choice(ITEMS + [None]) # a veces no dropea nada
+    return Enemigo(nombre, salud, fuerza, defensa, experiencia, item_drop)
+
+def entregar_drop(enemigo, mochila):
+    if enemigo.algun_item is not None:
+        mochila.guardar(enemigo.algun_item)
 
 class Yeti(Personaje):
     #el yeti será el último y más poderoso enemigo

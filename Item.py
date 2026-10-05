@@ -24,9 +24,19 @@ class ItemPermanente(Item):
         
     def aplicar(self, personaje):
         if self.atributo == "fuerza":
-            personaje.fuerza = personaje.fuerza + self.cantidad
+            valor_actual = personaje.get_fuerza()
+            personaje.set_fuerza(valor_actual + self.cantidad)
         elif self.atributo == "defensa":
-            personaje.defensa = personaje.defensa + self.cantidad
+            valor_actual = personaje.get_defensa()
+            personaje.set_defensa(valor_actual + self.cantidad)
         elif self.atributo == "salud_max":
-            personaje.salud_max = personaje.salud_max + self.cantidad
-    
+            valor_actual = personaje.get_salud_max()
+            personaje.set_salud_max(valor_actual + self.cantidad)
+
+ITEMS = [
+    ItemConsumible("Termo caliente", "Restaura calor corporal", cantidad_salud=25),
+    ItemConsumible("Barrita energética", "Restaura calor corporal", cantidad_salud=15),
+    ItemPermanente("Piolet reforzado", "Mejora la técnica de forma permanente", atributo="fuerza", cantidad=5),
+    ItemPermanente("Campera térmica", "Mejora el equipamiento de forma permanente", atributo="defensa", cantidad=4),
+    ItemPermanente("Botas de alta montaña", "Aumenta el calor corporal máximo", atributo="salud_max", cantidad=20),
+]

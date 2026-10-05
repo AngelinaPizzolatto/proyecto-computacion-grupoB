@@ -8,6 +8,37 @@ class Personaje():
         self.nivel = nivel
         self.experiencia = experiencia
         
+    # ---- Getters -----
+    def get_fuerza(self):
+        return self.fuerza
+    
+    def get_defensa(self):
+        return self.defensa
+    
+    def get_salud_max(self):
+        return self.salud_max
+    
+    # --- setters ---
+    def set_fuerza(self, nuevo_valor):
+        if nuevo_valor < 0:
+            self.fuerza = 0
+        else:
+            self.fuerza = nuevo_valor
+    
+    def set_defensa(self, nuevo_valor):
+        if nuevo_valor < 0:
+            self.defensa = 0
+        else:
+            self.defensa = nuevo_valor
+        
+    def set_salud_max(self, nuevo_valor):
+        if nuevo_valor < 0:
+            self.salud_max = 0
+        else:
+            self.salud_max = nuevo_valor
+        
+    # ----------
+        
     def vive(self):
         return self.salud > 0
     
