@@ -1,0 +1,7 @@
+INTRODUCCION = "El helicóptero apenas los deja en la cumbre antes de que el motor falle por el frío antinatural. ..."
+TRANSICION_1 = "Dejan atrás los árboles muertos. El viento aúlla trayendo el sonido de picos golpeando la piedra. ..."
+TRANSICION_2 = "El hielo negro cruje bajo sus botas. Han superado el campamento, pero la toxina es más fuerte aquí arriba. ..."
+APARICION_YETI = "El Gran Yeti se alza frente a ustedes. ..."
+AVALANCHA = "El Gran Yeti, herido, golpea el suelo fracturando el glaciar. ¡Avalancha! ..."
+VICTORIA = "El gigante cae, exhausto. ..."
+DERROTA = "El frío glacial penetra sus huesos. ..."
