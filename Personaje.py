@@ -1,3 +1,4 @@
+from Estados import Estados
 class Personaje():
     def __init__(self, nombre, salud=100, fuerza=80, defensa=50, nivel=1, experiencia=0):
         self.nombre = nombre
@@ -7,8 +8,10 @@ class Personaje():
         self.defensa = defensa
         self.nivel = nivel
         self.experiencia = experiencia
+        #pila para el manejo de estados
+        self.estados_alterados = Estados()
         
-    # ---- Getters -----
+    # getters 
     def get_fuerza(self):
         return self.fuerza
     
@@ -18,7 +21,7 @@ class Personaje():
     def get_salud_max(self):
         return self.salud_max
     
-    # --- setters ---
+    # setters
     def set_fuerza(self, nuevo_valor):
         if nuevo_valor < 0:
             self.fuerza = 0
@@ -37,7 +40,7 @@ class Personaje():
         else:
             self.salud_max = nuevo_valor
         
-    # ----------
+    #
         
     def vive(self):
         return self.salud > 0
@@ -69,15 +72,31 @@ class Personaje():
 class Rescatista(Personaje):
     def __init__(self,nombre = "Rescatista"):
         super().__init__(nombre, salud=110, fuerza=75, defensa=60)
+        
+    def primeros_auxilios(self,aliado):
+        curacion = 30
+        aliado.salud = min(aliado.salud + curacion, aliado.salud_max)
+        return f"{self.nombre} aplicó primeros auxilios a {aliado.nombre} y recuperó {curacion} de calor corporal "
 #conocer mejor el mapa o atajos
 #posee más calor corporal, lo que se traduce en más salud de lo normal
 
 class Instructor(Personaje):
     def __init__(self, nombre= "Instructor"):
         super().__init__(nombre, salud=90, fuerza=90, defensa=55)
+        self.esta_provocando = True
 #tiene más fuerza y experiencia
+
+    def provocar(self):
+        self.esta_provocando = True
+        self.defensa += 15
+        return f"{self.nombre} da un grito para atraer la atención y su defensa aumenta temporalmente"
 
 class Rider(Personaje):
     def __init__(self, nombre= "Rider"):
         super().__init__(nombre, salud=95, fuerza=85, defensa=45)
+        
+    def acrobacia(self, objetivo):
+        danio1 = self.atacar(objetivo)
+        danio2 = self.atacar(objetivo)
+        return f"{self.nombre} realizó una acrobacia y golpeó dos veces causando un primer daño de {danio1} y un segundo de {danio2}"
 #el rider al ser un profesional va a ser más rápido y puede defender al equipo mejor (ver como agregamos esto)
