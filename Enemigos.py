@@ -19,16 +19,16 @@ ENEMIGOS = {
     #Después tenemos que cambiarle el nombre al diccionario de enemigos
     #y pensar en nombres para las 6 bestias o monstruos 
     "pista_verde": [
-        ("Monstruo1", (25, 40), (10, 18), (5, 10)),
-        ("Monstruo2", (20, 30), (8, 14), (8, 12)),
+        ("Espectro de la ventisca", (25, 40), (10, 18), (5, 10)),
+        ("Lobo corrupto de las nieves", (20, 30), (8, 14), (8, 12)),
     ],
     "pista_amarilla": [
-        ("Monstruo3", (50, 70), (12, 20), (20, 30)),
-        ("Monstruo4", (35, 50), (15, 22), (10, 16)),
+        ("Gargola de hielo corrupta", (50, 70), (12, 20), (20, 30)),
+        ("Sombre de la montaña", (35, 50), (15, 22), (10, 16)),
     ],
     "pista_roja": [
-        ("Monstruo5", (80, 110), (20, 28), (30, 40)),
-        ("Monstruo6", (60, 90), (25, 35), (18, 25)),
+        ("Behemoth helado corrupto", (80, 110), (20, 28), (30, 40)),
+        ("Guardian helado de las cumbres", (60, 90), (25, 35), (18, 25)),
     ],
 }
 
@@ -50,9 +50,11 @@ class Yeti(Personaje):
     def __init__(self):
         super().__init__("Yeti", salud=250, fuerza=30, defensa=35)
         self.fase_avalancha = False
+        self.experiencia_asignada = 100
+        self.algun_item = None
         
     def recibir_danio(self, danio):
         super().recibir_danio(danio)
         if self.salud <= self.salud_max // 2 and not self.fase_avalancha:
             self.fase_avalancha = True
-            self.fuerza += 10 # Aumenta su fuerza en la fase avalancha
+            self.fuerza += 15 # Aumenta su fuerza en la fase avalancha
