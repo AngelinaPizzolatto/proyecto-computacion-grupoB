@@ -13,7 +13,7 @@ class Enemigo(Personaje):
         return self.algun_item
     
     def set_algun_item(self, algun_item):
-        return algun_item
+        self.algun_item = algun_item
         
 ENEMIGOS = {
     #Después tenemos que cambiarle el nombre al diccionario de enemigos
@@ -38,7 +38,7 @@ def generar_enemigo(pista):
     fuerza = random.randint(*rango_fuerza)
     defensa = random.randint(*rango_defensa)
     experiencia = salud // 4
-    item_drop = random.choice(ITEMS + [None]) # a veces no dropea nada
+    item_drop = random.choice(ITEMS + [None]) if 'ITEMS' in globals() else None
     return Enemigo(nombre, salud, fuerza, defensa, experiencia, item_drop)
 
 def entregar_drop(enemigo, mochila):
@@ -55,3 +55,4 @@ class Yeti(Personaje):
         super().recibir_danio(danio)
         if self.salud <= self.salud_max // 2 and not self.fase_avalancha:
             self.fase_avalancha = True
+            self.fuerza += 10 # Aumenta su fuerza en la fase avalancha
