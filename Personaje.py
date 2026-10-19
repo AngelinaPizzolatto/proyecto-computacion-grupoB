@@ -81,3 +81,4 @@ class Rider(Personaje):
     def __init__(self, nombre= "Rider"):
         super().__init__(nombre, salud=95, fuerza=85, defensa=45)
 #el rider al ser un profesional va a ser más rápido y puede defender al equipo mejor (ver como agregamos esto)
+#mejorar la logica del juego
