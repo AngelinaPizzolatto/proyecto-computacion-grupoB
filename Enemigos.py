@@ -44,6 +44,19 @@ def generar_enemigo(pista):
 def entregar_drop(enemigo, mochila):
     if enemigo.algun_item is not None:
         mochila.guardar(enemigo.algun_item)
+        
+def generar_jefe(pista):
+    if pista == "pista_roja":
+        return Yeti()
+
+    jefe = generar_enemigo(pista)
+    jefe.nombre = f"Jefe: {jefe.nombre}"
+    jefe.salud = int(jefe.salud * 1.5)
+    jefe.salud_max = jefe.salud
+    jefe.fuerza = int(jefe.fuerza * 1.25)
+    jefe.defensa = int(jefe.defensa * 1.2)
+    jefe.experiencia_asignada *= 2
+    return jefe
 
 class Yeti(Personaje):
     #el yeti será el último y más poderoso enemigo

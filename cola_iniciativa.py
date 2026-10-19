@@ -1,4 +1,4 @@
-class cola_iniciativa:
+class ColaIniciativa:
     def __init__(self):
         self.cola = []
         
@@ -9,3 +9,6 @@ class cola_iniciativa:
         if self.cola:
             return self.cola.pop(0)
         return None
+
+
+cola_iniciativa = ColaIniciativa
