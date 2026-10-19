@@ -1,6 +1,5 @@
 from TurnosCombate import TurnosCombate
 
-
 class Combate:
     def __init__(self, equipo, enemigo):
         self.equipo = equipo
@@ -34,7 +33,7 @@ class Combate:
         for personaje in self.equipo:
             if personaje.vive():
                 danio = enemigo.atacar(personaje)
-                print(f"{enemigo.nombre} ataca a {personaje.nombre} y causa {danio} de daño.")
+                print(f"{enemigo.nombre} ataca a {personaje.nombre} y causa {danio} de daño")
                 break
     
     def finalizar_combate(self):
@@ -67,13 +66,13 @@ class Combate:
                         if danio:
                             print(
                                 f"{combatiente.nombre} ataca a {self.enemigo.nombre} "
-                                f"y causa {danio} de daño."
+                                f"y causa {danio} de daño"
                             )
 
                 resultado = self.finalizar_combate()
                 if resultado != "en_curso":
                     if resultado == "victoria":
-                        print(f"{self.enemigo.nombre} fue derrotado.")
+                        print(f"{self.enemigo.nombre} fue derrotado")
                     return resultado == "victoria"
 
                 combatiente = self.obtener_siguiente_turno()

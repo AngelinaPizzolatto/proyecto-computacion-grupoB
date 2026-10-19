@@ -1,4 +1,4 @@
-from Enemigos import generar_enemigo
+from Enemigo import generar_enemigo
 
 class Sector:
     def __init__(self, nombre, clave_enemigos, cantidad_encuentros, texto_transicion):

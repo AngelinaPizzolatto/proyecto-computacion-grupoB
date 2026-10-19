@@ -14,6 +14,17 @@ class Enemigo(Personaje):
     
     def set_algun_item(self, algun_item):
         self.algun_item = algun_item
+    
+    def atacar(self,objetivo):
+        danio = super().atacar(objetivo)
+        self.turnos_atacados +=1
+        if self.turnos_atacados == 3:
+            estados_posibles = ["Congelamiento", "Ceguera", "Hipotermia", "Aturdimiento"]
+            estado_aplicado = random.choice(estados_posibles)
+            objetivo.estados_alterados.apilar(estado_aplicado)
+            print(f"El {self.nombre} provocó '{estado_aplicado}' a {objetivo.nombre}")
+            self.turnos_atacados = 0
+        return danio
         
 ENEMIGOS = {
     #Después tenemos que cambiarle el nombre al diccionario de enemigos
@@ -58,16 +69,15 @@ def generar_jefe(pista):
     jefe.experiencia_asignada *= 2
     return jefe
 
-class Yeti(Personaje):
-    #el yeti será el último y más poderoso enemigo
+class Yeti(Enemigo):
     def __init__(self):
-        super().__init__("Yeti", salud=250, fuerza=30, defensa=35)
-        self.fase_avalancha = False
-        self.experiencia_asignada = 100
+        super().__init__(nombre="Yeti", salud=250, fuerza=30, defensa=35,experiencia_asignada = 1000)
         self.algun_item = None
+        self.fase_avalancha = False
         
     def recibir_danio(self, danio):
         super().recibir_danio(danio)
+        
         if self.salud <= self.salud_max // 2 and not self.fase_avalancha:
             self.fase_avalancha = True
-            self.fuerza += 15 # Aumenta su fuerza en la fase avalancha
+            self.fuerza += 15

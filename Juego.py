@@ -1,7 +1,7 @@
 import Narrativa
 from Personaje import Rescatista, Instructor, Rider
 from Sector import Sector
-from Enemigos import generar_jefe
+from Enemigo import generar_jefe
 from Combate import Combate
 
 class Juego:

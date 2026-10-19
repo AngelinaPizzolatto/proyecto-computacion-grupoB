@@ -8,10 +8,8 @@ class Personaje():
         self.defensa = defensa
         self.nivel = nivel
         self.experiencia = experiencia
-        #pila para el manejo de estados
         self.estados_alterados = Estados()
         
-    # getters 
     def get_fuerza(self):
         return self.fuerza
     
@@ -21,7 +19,6 @@ class Personaje():
     def get_salud_max(self):
         return self.salud_max
     
-    # setters
     def set_fuerza(self, nuevo_valor):
         if nuevo_valor < 0:
             self.fuerza = 0
@@ -40,17 +37,41 @@ class Personaje():
         else:
             self.salud_max = nuevo_valor
         
-    #
         
     def vive(self):
         return self.salud > 0
     
     def atacar(self, objetivo):
+        estado_actual = self.estados_alterados.ver_tope()
+        fuerza_efectiva = self.fuerza
+        
+        if estado_actual == "Aturdimiento":
+            print(f"{self.nombre} fue aturdido por la Escarcha. Pierde su turno")
+            return 0
+        
+        if estado_actual == "Hipotermia":
+            dano_hipotermia = 5
+            self.salud = max(self.salud - dano_hipotermia, 0)
+            print(f"{self.nombre} sufre {dano_hipotermia} de daño por Hipotermia.")
+            if not self.vive():
+                print(f"{self.nombre} ha caído por la Hipotermia antes de poder atacar")
+                return 0
+            
+        if estado_actual == "Ceguera":
+            fuerza_efectiva = self.fuerza // 2
+            print(f"{self.nombre} tiene Ceguera. Su ataque es demasiado débil")
+        
         danio = max(self.fuerza - (objetivo.defensa //2), 1)
         objetivo.recibir_danio(danio)
         return danio
     
     def recibir_danio(self,danio):
+        estado_actual = self.estados_alterados.ver_tope()
+        if estado_actual == "Congelamiento":
+            danio_extra = 5
+            danio += danio_extra
+            print(f"La armadura de {self.nombre} está frágil por el Congelamiento. Recibe {danio_extra} de daño extra")
+        
         self.salud = max(self.salud - danio, 0)
         
     def ganar_experiencia(self, cantidad):
@@ -67,7 +88,7 @@ class Personaje():
         self.fuerza += 5
         self.defensa += 3
         self.salud_max += 15
-        self.salud = self.salud_max #esto es para que cuando se suba de nivel la salud se restablezca al 100%
+        self.salud = self.salud_max 
     
 class Rescatista(Personaje):
     def __init__(self,nombre = "Rescatista"):
@@ -77,14 +98,11 @@ class Rescatista(Personaje):
         curacion = 30
         aliado.salud = min(aliado.salud + curacion, aliado.salud_max)
         return f"{self.nombre} aplicó primeros auxilios a {aliado.nombre} y recuperó {curacion} de calor corporal "
-#conocer mejor el mapa o atajos
-#posee más calor corporal, lo que se traduce en más salud de lo normal
 
 class Instructor(Personaje):
     def __init__(self, nombre= "Instructor"):
         super().__init__(nombre, salud=90, fuerza=90, defensa=55)
-        self.esta_provocando = True
-#tiene más fuerza y experiencia
+        self.esta_provocando = False
 
     def provocar(self):
         self.esta_provocando = True
@@ -94,5 +112,3 @@ class Instructor(Personaje):
 class Rider(Personaje):
     def __init__(self, nombre= "Rider"):
         super().__init__(nombre, salud=95, fuerza=85, defensa=45)
-#el rider al ser un profesional va a ser más rápido y puede defender al equipo mejor (ver como agregamos esto)
-#mejorar la logica del juego

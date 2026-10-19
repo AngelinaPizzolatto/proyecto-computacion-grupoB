@@ -1,4 +1,4 @@
-class Estados: #pila de estados
+class Estados:
     
     def __init__(self):
         self._estados  = []
