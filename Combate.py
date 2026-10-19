@@ -1,18 +1,20 @@
-from cola_iniciativa import ColaIniciativa
+from TurnosCombate import TurnosCombate
 
 
 class Combate:
     def __init__(self, equipo, enemigo):
         self.equipo = equipo
         self.enemigo = enemigo
-        self.cola_iniciativa = ColaIniciativa()
+        self.orden_turnos = TurnosCombate()
         self.preparar_combate()
 
     def preparar_combate(self):
-        combatientes = [p for p in self.equipo if p.vive()]
+        self.orden_turnos = TurnosCombate()
+        for personaje in self.equipo:
+            if personaje.vive():
+                self.orden_turnos.encolar(personaje)
         if self.enemigo.vive():
-            combatientes.append(self.enemigo)
-        self.cola_iniciativa.cargar_combatientes(combatientes)
+            self.orden_turnos.encolar(self.enemigo)
 
     def turno_jugador(self, personaje, objetivo, accion="atacar"):
         if not personaje.vive():
@@ -23,7 +25,7 @@ class Combate:
         return False
 
     def obtener_siguiente_turno(self):
-        return self.cola_iniciativa.siguiente()
+        return self.orden_turnos.desencolar()
 
     def ejecutar_turno_enemigo(self, enemigo):
         if not enemigo.vive():
