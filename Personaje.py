@@ -94,9 +94,5 @@ class Instructor(Personaje):
 class Rider(Personaje):
     def __init__(self, nombre= "Rider"):
         super().__init__(nombre, salud=95, fuerza=85, defensa=45)
-        
-    def acrobacia(self, objetivo):
-        danio1 = self.atacar(objetivo)
-        danio2 = self.atacar(objetivo)
-        return f"{self.nombre} realizó una acrobacia y golpeó dos veces causando un primer daño de {danio1} y un segundo de {danio2}"
 #el rider al ser un profesional va a ser más rápido y puede defender al equipo mejor (ver como agregamos esto)
+#mejorar la logica del juego

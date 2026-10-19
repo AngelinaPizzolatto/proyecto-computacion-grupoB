@@ -13,22 +13,22 @@ class Enemigo(Personaje):
         return self.algun_item
     
     def set_algun_item(self, algun_item):
-        return algun_item
+        self.algun_item = algun_item
         
 ENEMIGOS = {
     #Después tenemos que cambiarle el nombre al diccionario de enemigos
     #y pensar en nombres para las 6 bestias o monstruos 
     "pista_verde": [
-        ("Monstruo1", (25, 40), (10, 18), (5, 10)),
-        ("Monstruo2", (20, 30), (8, 14), (8, 12)),
+        ("Espectro de la ventisca", (25, 40), (10, 18), (5, 10)),
+        ("Lobo corrupto de las nieves", (20, 30), (8, 14), (8, 12)),
     ],
     "pista_amarilla": [
-        ("Monstruo3", (50, 70), (12, 20), (20, 30)),
-        ("Monstruo4", (35, 50), (15, 22), (10, 16)),
+        ("Gargola de hielo corrupta", (50, 70), (12, 20), (20, 30)),
+        ("Sombre de la montaña", (35, 50), (15, 22), (10, 16)),
     ],
     "pista_roja": [
-        ("Monstruo5", (80, 110), (20, 28), (30, 40)),
-        ("Monstruo6", (60, 90), (25, 35), (18, 25)),
+        ("Behemoth helado corrupto", (80, 110), (20, 28), (30, 40)),
+        ("Guardian helado de las cumbres", (60, 90), (25, 35), (18, 25)),
     ],
 }
 
@@ -38,20 +38,36 @@ def generar_enemigo(pista):
     fuerza = random.randint(*rango_fuerza)
     defensa = random.randint(*rango_defensa)
     experiencia = salud // 4
-    item_drop = random.choice(ITEMS + [None]) # a veces no dropea nada
+    item_drop = random.choice(ITEMS + [None]) if 'ITEMS' in globals() else None
     return Enemigo(nombre, salud, fuerza, defensa, experiencia, item_drop)
 
 def entregar_drop(enemigo, mochila):
     if enemigo.algun_item is not None:
         mochila.guardar(enemigo.algun_item)
+        
+def generar_jefe(pista):
+    if pista == "pista_roja":
+        return Yeti()
+
+    jefe = generar_enemigo(pista)
+    jefe.nombre = f"Jefe: {jefe.nombre}"
+    jefe.salud = int(jefe.salud * 1.5)
+    jefe.salud_max = jefe.salud
+    jefe.fuerza = int(jefe.fuerza * 1.25)
+    jefe.defensa = int(jefe.defensa * 1.2)
+    jefe.experiencia_asignada *= 2
+    return jefe
 
 class Yeti(Personaje):
     #el yeti será el último y más poderoso enemigo
     def __init__(self):
         super().__init__("Yeti", salud=250, fuerza=30, defensa=35)
         self.fase_avalancha = False
+        self.experiencia_asignada = 100
+        self.algun_item = None
         
     def recibir_danio(self, danio):
         super().recibir_danio(danio)
         if self.salud <= self.salud_max // 2 and not self.fase_avalancha:
             self.fase_avalancha = True
+            self.fuerza += 15 # Aumenta su fuerza en la fase avalancha
