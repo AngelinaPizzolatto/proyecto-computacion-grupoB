@@ -1,26 +1,25 @@
-from Enemigos import *
-from Estados import *
 from cola_iniciativa import ColaIniciativa
+
+
 class Combate:
     def __init__(self, equipo, enemigo):
         self.equipo = equipo
         self.enemigo = enemigo
-        self.orden_turnos = []
+        self.cola_iniciativa = ColaIniciativa()
         self.preparar_combate()
 
     def preparar_combate(self):
         combatientes = [p for p in self.equipo if p.vive()]
         if self.enemigo.vive():
             combatientes.append(self.enemigo)
-        self.cola_iniciativa.cargar_combatientes(combatientes)    
+        self.cola_iniciativa.cargar_combatientes(combatientes)
 
     def turno_jugador(self, personaje, objetivo, accion="atacar"):
         if not personaje.vive():
             return False
         
         if accion == "atacar":
-            personaje.atacar(objetivo)
-            return True
+            return personaje.atacar(objetivo)
         return False
 
     def obtener_siguiente_turno(self):
@@ -32,7 +31,8 @@ class Combate:
         
         for personaje in self.equipo:
             if personaje.vive():
-                self.enemigo.atacar(personaje)
+                danio = enemigo.atacar(personaje)
+                print(f"{enemigo.nombre} ataca a {personaje.nombre} y causa {danio} de daño.")
                 break
     
     def finalizar_combate(self):
@@ -50,3 +50,30 @@ class Combate:
     def combate_terminado(self):
         equipo_vivo = any(p.vive() for p in self.equipo)
         return not equipo_vivo or not self.enemigo.vive()
+
+    def iniciar(self):
+        while not self.combate_terminado():
+            self.preparar_combate()
+            combatiente = self.obtener_siguiente_turno()
+
+            while combatiente is not None:
+                if combatiente.vive():
+                    if combatiente is self.enemigo:
+                        self.ejecutar_turno_enemigo(combatiente)
+                    else:
+                        danio = self.turno_jugador(combatiente, self.enemigo)
+                        if danio:
+                            print(
+                                f"{combatiente.nombre} ataca a {self.enemigo.nombre} "
+                                f"y causa {danio} de daño."
+                            )
+
+                resultado = self.finalizar_combate()
+                if resultado != "en_curso":
+                    if resultado == "victoria":
+                        print(f"{self.enemigo.nombre} fue derrotado.")
+                    return resultado == "victoria"
+
+                combatiente = self.obtener_siguiente_turno()
+
+        return self.finalizar_combate() == "victoria"

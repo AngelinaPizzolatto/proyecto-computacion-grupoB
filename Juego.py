@@ -1,7 +1,8 @@
 import Narrativa
 from Personaje import Rescatista, Instructor, Rider
 from Sector import Sector
-from Enemigos import generar_enemigo
+from Enemigos import generar_jefe
+from Combate import Combate
 
 class Juego:
     def __init__(self):
@@ -25,6 +26,11 @@ class Juego:
                 return True
         return False
 
+    def pelear(self, enemigo):
+        print(f"¡Comienza el combate contra {enemigo.nombre}!")
+        combate = Combate(self.equipo, enemigo)
+        return combate.iniciar()
+
     def recorrer_mapa(self):
         sector = self.sector_inicial
         while sector is not None:
@@ -35,6 +41,9 @@ class Juego:
                 if not self.pelear(enemigo):
                     return False
                 
+            if not sector.tiene_siguiente() and sector.texto_transicion:
+                print(sector.texto_transicion)
+
             jefe = generar_jefe(sector.clave_enemigos)
             if not self.pelear(jefe):
                 return False
@@ -52,4 +61,8 @@ class Juego:
             if self.recorrer_mapa():
                 print(Narrativa.VICTORIA)
                 break
-            print (Narrativa.DERROTA)
+            print(Narrativa.DERROTA)
+
+
+if __name__ == "__main__":
+    Juego().jugar()
