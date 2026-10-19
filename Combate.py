@@ -1,5 +1,5 @@
 from Enemigos import *
-from Mochila import *
+from Estados import *
 class Combate:
     def __init__(self, equipo, enemigo):
         self.equipo = equipo

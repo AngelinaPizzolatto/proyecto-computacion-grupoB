@@ -1,7 +1,7 @@
 import random
 from Personaje import Personaje
 from Item import *
-from Mochila import *
+from Estados import *
 
 class Enemigo(Personaje):
     def __init__(self, nombre, salud, fuerza, defensa, experiencia_asignada, algun_item = None):
