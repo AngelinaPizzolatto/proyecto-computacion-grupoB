@@ -60,6 +60,16 @@ class Personaje():
         if estado_actual == "Ceguera":
             fuerza_efectiva = self.fuerza // 2
             print(f"{self.nombre} tiene Ceguera. Su ataque es demasiado débil")
+            
+        if estado_actual == "Necrosis":
+            dano_necrosis = 8
+            self.salud = max(self.salud - dano_necrosis, 0)
+            fuerza_efectiva = int(self.fuerza * 0.75) 
+            
+            print(f"[{self.nombre} sufre {dano_necrosis} de daño por Necrosis y su cuerpo se debilita")
+            if not self.vive():
+                print(f"{self.nombre} ha muerto a causa de la Necrosis")
+                return 0
         
         danio = max(self.fuerza - (objetivo.defensa //2), 1)
         objetivo.recibir_danio(danio)

@@ -27,19 +27,17 @@ class Enemigo(Personaje):
         return danio
         
 ENEMIGOS = {
-    #Después tenemos que cambiarle el nombre al diccionario de enemigos
-    #y pensar en nombres para las 6 bestias o monstruos 
     "pista_verde": [
-        ("Espectro de la ventisca", (25, 40), (10, 18), (5, 10)),
-        ("Lobo corrupto de las nieves", (20, 30), (8, 14), (8, 12)),
+        ("Alpinista novato", (25, 40), (10, 18), (5, 10)),
+        ("Ankor: Lobo ártico hambriento", (20, 30), (8, 14), (8, 12)), #Lobo ártico (ataques rápidos)
     ],
     "pista_amarilla": [
-        ("Gargola de hielo corrupta", (50, 70), (12, 20), (20, 30)),
-        ("Sombre de la montaña", (35, 50), (15, 22), (10, 16)),
+        ("Guía zombie", (50, 70), (12, 20), (20, 30)), #Oso polar del norte (mucha salud, muchos golpes-quita mucha vida)
+        ("Nanuk: Oso polar mutado", (35, 50), (15, 22), (10, 16)),
     ],
     "pista_roja": [
-        ("Behemoth helado corrupto", (80, 110), (20, 28), (30, 40)),
-        ("Guardian helado de las cumbres", (60, 90), (25, 35), (18, 25)),
+        ("Médico ", (80, 110), (20, 28), (30, 40)),
+        ("Atlas: Alce gigante", (60, 90), (25, 35), (18, 25)),
     ],
 }
 
@@ -68,6 +66,18 @@ def generar_jefe(pista):
     jefe.defensa = int(jefe.defensa * 1.2)
     jefe.experiencia_asignada *= 2
     return jefe
+
+class AlpinistaInfectado(Enemigo):
+    def __init__(self, nombre, salud, fuerza, defensa):
+        super().__init__(nombre, salud, fuerza, defensa, experiencia_asignada=80, algun_item="Bacteria")
+        
+    def atacar(self, objetivo):
+        danio = super().atacar(objetivo)
+        
+        if danio > 0 and random.random() < 0.30:  #probabilidad de contagiar la bacteria
+            print(f"La bacteria del hielo de {self.nombre} infecta las heridas de {objetivo.nombre}")
+            objetivo.estados_alterados.apilar("Necrosis")
+        return danio
 
 class Yeti(Enemigo):
     def __init__(self):
