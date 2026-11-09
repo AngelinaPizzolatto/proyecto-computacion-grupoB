@@ -7,6 +7,7 @@ class Enemigo(Personaje):
     def __init__(self, nombre, salud, fuerza, defensa, experiencia_asignada, algun_item = None):
         super().__init__(nombre, salud, fuerza, defensa)
         self.experiencia_asignada = experiencia_asignada
+        self.turnos_atacados = 0
         self.algun_item = algun_item
         
     def get_algun_item(self):

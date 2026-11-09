@@ -62,7 +62,3 @@ class Juego:
                 print(Narrativa.VICTORIA)
                 break
             print(Narrativa.DERROTA)
-
-
-if __name__ == "__main__":
-    Juego().jugar()

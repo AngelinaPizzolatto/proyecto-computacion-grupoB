@@ -71,7 +71,7 @@ class Personaje():
                 print(f"{self.nombre} ha muerto a causa de la Necrosis")
                 return 0
         
-        danio = max(self.fuerza - (objetivo.defensa //2), 1)
+        danio = max(fuerza_efectiva - (objetivo.defensa //2), 1)
         objetivo.recibir_danio(danio)
         return danio
     
