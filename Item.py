@@ -12,9 +12,40 @@ class ItemConsumible(Item):
         self.cantidad_salud = cantidad_salud
         
     def aplicar(self, personaje):
+        if personaje.salud == personaje.salud_max:
+            print(f"{personaje.nombre} ya tiene la salud completa")
+            return False
         personaje.salud = personaje.salud + self.cantidad_salud
         if personaje.salud > personaje.salud_max:
             personaje.salud = personaje.salud_max
+        print(f"{personaje.nombre} ahora tiene {personaje.salud}/{personaje.salud_max} de salud")
+        return True
+
+class ItemAntifungico(ItemConsumible):
+    def __init__(self, nombre, descripcion):
+        super().__init__(nombre, descripcion, 0)
+
+    def aplicar(self, personaje):
+        if not personaje.estados_alterados.tiene("Necrosis"):
+            print(f"{personaje.nombre} no tiene Necrosis")
+            return False
+        personaje.estados_alterados.quitar("Necrosis")
+        print(f"{personaje.nombre} se curó de la Necrosis")
+        return True
+
+class ItemReanimacion(ItemConsumible):
+    def __init__(self, nombre, descripcion):
+        super().__init__(nombre, descripcion, 0)
+
+    def aplicar(self, caidos):
+        if caidos.esta_vacia():
+            print("No hay personajes caídos")
+            return False
+        personaje = caidos.desapilar()
+        personaje.salud = personaje.salud_max // 2
+        personaje.estados_alterados.limpiar()
+        print(f"{personaje.nombre} volvió a la vida con {personaje.salud}/{personaje.salud_max} de salud")
+        return True
 
 class ItemPermanente(Item):
     def __init__(self, nombre, descripcion, atributo, cantidad):
@@ -33,7 +64,12 @@ class ItemPermanente(Item):
             valor_actual = personaje.get_salud_max()
             personaje.set_salud_max(valor_actual + self.cantidad)
 
+BOTIQUIN = ItemConsumible("Botiquín", "Restaura 40 de calor corporal", cantidad_salud=40)
+ANTIFUNGICO = ItemAntifungico("Antifúngico", "Cura la Necrosis")
+REANIMACION = ItemReanimacion("Botiquín de Reanimación", "Revive al último personaje caído")
+
 ITEMS = [
+    ANTIFUNGICO,
     ItemConsumible("Termo caliente", "Restaura calor corporal", cantidad_salud=25),
     ItemConsumible("Barrita energética", "Restaura calor corporal", cantidad_salud=15),
     ItemPermanente("Piolet reforzado", "Mejora la técnica de forma permanente", atributo="fuerza", cantidad=5),
