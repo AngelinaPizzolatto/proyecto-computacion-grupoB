@@ -1,13 +1,14 @@
 import random
 from TurnosCombate import TurnosCombate
 from Interfaz import pedir_opcion
-from Item import ItemPermanente
+from Item import ItemPermanente, ItemReanimacion
 
 class Combate:
-    def __init__(self, equipo, enemigos, mochila):
+    def __init__(self, equipo, enemigos, mochila, caidos):
         self.equipo = equipo
         self.enemigos = enemigos
         self.mochila = mochila
+        self.caidos = caidos
         self.orden_turnos = TurnosCombate()
         self.pendientes = []
         self.preparar_combate()
@@ -38,7 +39,14 @@ class Combate:
             personaje = random.choice(vivos)
             danio = enemigo.atacar(personaje)
             print(f"{enemigo.nombre} ataca a {personaje.nombre} y causa {danio} de daño")
-    
+            self.registrar_caidos()
+
+    def registrar_caidos(self):
+        for personaje in self.equipo:
+            if not personaje.vive() and not self.caidos.contiene(personaje):
+                self.caidos.apilar(personaje)
+                print(f"{personaje.nombre} ha caído")
+
     def elegir_aliado(self, pregunta):
         vivos = [p for p in self.equipo if p.vive()]
         print(pregunta)
@@ -100,6 +108,7 @@ class Combate:
         for personaje in self.equipo:
             if personaje.vive():
                 personaje.procesar_estados()
+                self.registrar_caidos()
 
     def atacar_enemigo(self, personaje):
         objetivo = self.elegir_enemigo()
@@ -123,8 +132,11 @@ class Combate:
         if opcion == 0:
             return False
         item = self.mochila.items[opcion - 1]
-        aliado = self.elegir_aliado(f"¿Quién usa {item.nombre}?")
-        if item.aplicar(aliado):
+        if isinstance(item, ItemReanimacion):
+            usado = item.aplicar(self.caidos)
+        else:
+            usado = item.aplicar(self.elegir_aliado(f"¿Quién usa {item.nombre}?"))
+        if usado:
             self.mochila.sacar(opcion - 1)
             return True
         return False

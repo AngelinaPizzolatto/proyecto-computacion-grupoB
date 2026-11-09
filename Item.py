@@ -33,6 +33,20 @@ class ItemAntifungico(ItemConsumible):
         print(f"{personaje.nombre} se curó de la Necrosis")
         return True
 
+class ItemReanimacion(ItemConsumible):
+    def __init__(self, nombre, descripcion):
+        super().__init__(nombre, descripcion, 0)
+
+    def aplicar(self, caidos):
+        if caidos.esta_vacia():
+            print("No hay personajes caídos")
+            return False
+        personaje = caidos.desapilar()
+        personaje.salud = personaje.salud_max // 2
+        personaje.estados_alterados.limpiar()
+        print(f"{personaje.nombre} volvió a la vida con {personaje.salud}/{personaje.salud_max} de salud")
+        return True
+
 class ItemPermanente(Item):
     def __init__(self, nombre, descripcion, atributo, cantidad):
         super().__init__(nombre, descripcion)
@@ -52,6 +66,7 @@ class ItemPermanente(Item):
 
 BOTIQUIN = ItemConsumible("Botiquín", "Restaura 40 de calor corporal", cantidad_salud=40)
 ANTIFUNGICO = ItemAntifungico("Antifúngico", "Cura la Necrosis")
+REANIMACION = ItemReanimacion("Botiquín de Reanimación", "Revive al último personaje caído")
 
 ITEMS = [
     ANTIFUNGICO,

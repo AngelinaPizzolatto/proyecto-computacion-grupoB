@@ -56,6 +56,7 @@ def generar_jefe(pista):
     jefe.fuerza = int(jefe.fuerza * 1.25)
     jefe.defensa = int(jefe.defensa * 1.2)
     jefe.experiencia_asignada *= 2
+    jefe.algun_item = REANIMACION
     return jefe
 
 class AlpinistaInfectado(Enemigo):

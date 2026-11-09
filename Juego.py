@@ -6,16 +6,19 @@ from Combate import Combate
 from Interfaz import pausar
 from Mochila import Mochila
 from Item import BOTIQUIN, ANTIFUNGICO
+from PilaCaidos import PilaCaidos
 
 class Juego:
     def __init__(self):
         self.equipo = []
         self.mochila = Mochila()
+        self.caidos = PilaCaidos()
         self.sector_inicial = None
 
     def crear_equipo(self):
         self.equipo = [Rescatista(), Instructor(), Rider()]
         self.mochila = Mochila()
+        self.caidos = PilaCaidos()
         self.mochila.guardar(BOTIQUIN)
         self.mochila.guardar(BOTIQUIN)
         self.mochila.guardar(ANTIFUNGICO)
@@ -37,7 +40,7 @@ class Juego:
     def pelear(self, enemigos):
         nombres = ", ".join(e.nombre for e in enemigos)
         print(f"¡Comienza el combate contra {nombres}!")
-        combate = Combate(self.equipo, enemigos, self.mochila)
+        combate = Combate(self.equipo, enemigos, self.mochila, self.caidos)
         return combate.iniciar()
 
     def recorrer_mapa(self):

@@ -82,8 +82,6 @@ class Personaje():
             print(f"{self.nombre} sufre 8 de daño por Necrosis")
 
         self.estados_alterados.pasar_turno()
-        if not self.vive():
-            print(f"{self.nombre} ha caído por sus heridas")
 
     def ganar_experiencia(self, cantidad):
         self.experiencia += cantidad
@@ -104,7 +102,7 @@ class Personaje():
 class Rescatista(Personaje):
     def __init__(self,nombre = "Rescatista"):
         super().__init__(nombre, salud=110, fuerza=75, defensa=60)
-        
+
     def primeros_auxilios(self,aliado):
         curacion = 30
         aliado.salud = min(aliado.salud + curacion, aliado.salud_max)
