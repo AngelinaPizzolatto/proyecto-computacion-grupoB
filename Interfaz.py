@@ -1,3 +1,6 @@
+def pausar():
+    input("\nPresioná Enter para continuar...")
+
 def pedir_opcion(mensaje, minimo, maximo):
     while True:
         try:

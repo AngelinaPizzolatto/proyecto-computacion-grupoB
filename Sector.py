@@ -1,3 +1,4 @@
+import random
 from Enemigo import generar_enemigo
 
 class Sector:
@@ -17,6 +18,7 @@ class Sector:
     def tiene_siguiente(self):
         return self.siguiente_sector is not None
     
-    def generar_enemigo_normal(self):
-        return generar_enemigo(self.clave_enemigos)
+    def generar_horda(self):
+        cantidad = random.randint(1, 3)
+        return [generar_enemigo(self.clave_enemigos) for i in range(cantidad)]
         

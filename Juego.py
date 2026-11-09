@@ -3,6 +3,7 @@ from Personaje import Rescatista, Instructor, Rider
 from Sector import Sector
 from Enemigo import generar_jefe
 from Combate import Combate
+from Interfaz import pausar
 
 class Juego:
     def __init__(self):
@@ -26,9 +27,10 @@ class Juego:
                 return True
         return False
 
-    def pelear(self, enemigo):
-        print(f"¡Comienza el combate contra {enemigo.nombre}!")
-        combate = Combate(self.equipo, enemigo)
+    def pelear(self, enemigos):
+        nombres = ", ".join(e.nombre for e in enemigos)
+        print(f"¡Comienza el combate contra {nombres}!")
+        combate = Combate(self.equipo, enemigos)
         return combate.iniciar()
 
     def recorrer_mapa(self):
@@ -37,19 +39,22 @@ class Juego:
             print("=== " + sector.nombre + " ===")
             
             for i in range(sector.cantidad_encuentros):
-                enemigo = sector.generar_enemigo_normal()
-                if not self.pelear(enemigo):
+                print(f"Encuentro {i + 1} de {sector.cantidad_encuentros}")
+                if not self.pelear(sector.generar_horda()):
                     return False
-                
+
             if not sector.tiene_siguiente() and sector.texto_transicion:
                 print(sector.texto_transicion)
+                pausar()
 
             jefe = generar_jefe(sector.clave_enemigos)
-            if not self.pelear(jefe):
+            print(f"\n¡Aparece el jefe del sector: {jefe.nombre}!")
+            if not self.pelear([jefe]):
                 return False
-            
+
             if sector.tiene_siguiente():
                 print(sector.texto_transicion)
+                pausar()
             sector = sector.get_siguiente()
         return True
     
@@ -58,7 +63,9 @@ class Juego:
             self.crear_equipo()
             self.crear_mapa()
             print(Narrativa.INTRODUCCION)
+            pausar()
             if self.recorrer_mapa():
                 print(Narrativa.VICTORIA)
                 break
             print(Narrativa.DERROTA)
+            pausar()
