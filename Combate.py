@@ -101,15 +101,49 @@ class Combate:
             if personaje.vive():
                 personaje.procesar_estados()
 
+    def atacar_enemigo(self, personaje):
+        objetivo = self.elegir_enemigo()
+        danio = self.turno_jugador(personaje, objetivo)
+        if danio:
+            print(f"{personaje.nombre} ataca a {objetivo.nombre} y causa {danio} de daño")
+        if not objetivo.vive():
+            print(f"{objetivo.nombre} fue derrotado")
+
+    def usar_item(self):
+        if self.mochila.esta_vacia():
+            print("La mochila está vacía")
+            return False
+        print("¿Qué ítem usás?")
+        print("0. Volver")
+        numero = 1
+        for item in self.mochila.items:
+            print(f"{numero}. {item.nombre}: {item.descripcion}")
+            numero += 1
+        opcion = pedir_opcion("> ", 0, len(self.mochila.items))
+        if opcion == 0:
+            return False
+        item = self.mochila.items[opcion - 1]
+        aliado = self.elegir_aliado(f"¿Quién usa {item.nombre}?")
+        if item.aplicar(aliado):
+            self.mochila.sacar(opcion - 1)
+            return True
+        return False
+
+    def turno_personaje(self, personaje):
+        while True:
+            print(f"¿Qué hace {personaje.nombre}?")
+            print("1. Atacar")
+            print("2. Abrir mochila")
+            if pedir_opcion("> ", 1, 2) == 1:
+                self.atacar_enemigo(personaje)
+                return
+            if self.usar_item():
+                return
+
     def iniciar(self):
         while not self.combate_terminado():
             personaje = self.elegir_personaje()
-            objetivo = self.elegir_enemigo()
-            danio = self.turno_jugador(personaje, objetivo)
-            if danio:
-                print(f"{personaje.nombre} ataca a {objetivo.nombre} y causa {danio} de daño")
-            if not objetivo.vive():
-                print(f"{objetivo.nombre} fue derrotado")
+            self.turno_personaje(personaje)
             if not self.combate_terminado():
                 self.turno_enemigos()
                 self.aplicar_estados()

@@ -12,9 +12,14 @@ class ItemConsumible(Item):
         self.cantidad_salud = cantidad_salud
         
     def aplicar(self, personaje):
+        if personaje.salud == personaje.salud_max:
+            print(f"{personaje.nombre} ya tiene la salud completa")
+            return False
         personaje.salud = personaje.salud + self.cantidad_salud
         if personaje.salud > personaje.salud_max:
             personaje.salud = personaje.salud_max
+        print(f"{personaje.nombre} ahora tiene {personaje.salud}/{personaje.salud_max} de salud")
+        return True
 
 class ItemPermanente(Item):
     def __init__(self, nombre, descripcion, atributo, cantidad):
@@ -32,6 +37,8 @@ class ItemPermanente(Item):
         elif self.atributo == "salud_max":
             valor_actual = personaje.get_salud_max()
             personaje.set_salud_max(valor_actual + self.cantidad)
+
+BOTIQUIN = ItemConsumible("Botiquín", "Restaura 40 de calor corporal", cantidad_salud=40)
 
 ITEMS = [
     ItemConsumible("Termo caliente", "Restaura calor corporal", cantidad_salud=25),

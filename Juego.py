@@ -5,6 +5,7 @@ from Enemigo import generar_jefe
 from Combate import Combate
 from Interfaz import pausar
 from Mochila import Mochila
+from Item import BOTIQUIN
 
 class Juego:
     def __init__(self):
@@ -15,6 +16,8 @@ class Juego:
     def crear_equipo(self):
         self.equipo = [Rescatista(), Instructor(), Rider()]
         self.mochila = Mochila()
+        self.mochila.guardar(BOTIQUIN)
+        self.mochila.guardar(BOTIQUIN)
         
     def crear_mapa(self):
         sector1 = Sector("Sendero del bosque muerto", "pista_verde", 3, Narrativa.TRANSICION_1)
