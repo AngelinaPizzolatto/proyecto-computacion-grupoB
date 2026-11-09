@@ -69,6 +69,9 @@ class Personaje():
         if self.estados_alterados.tiene("Necrosis"):
             danio = int(danio * 1.25)
 
+        if self.estados_alterados.tiene("Provocando"):
+            danio = max(danio // 2, 1)
+
         self.salud = max(self.salud - danio, 0)
         return danio
 
@@ -103,21 +106,31 @@ class Rescatista(Personaje):
     def __init__(self,nombre = "Rescatista"):
         super().__init__(nombre, salud=110, fuerza=75, defensa=60)
 
-    def primeros_auxilios(self,aliado):
-        curacion = 30
-        aliado.salud = min(aliado.salud + curacion, aliado.salud_max)
-        return f"{self.nombre} aplicó primeros auxilios a {aliado.nombre} y recuperó {curacion} de calor corporal "
+    def usar_habilidad(self, equipo, enemigos):
+        aliado = self
+        for personaje in equipo:
+            if personaje.vive() and personaje.salud < aliado.salud:
+                aliado = personaje
+        aliado.salud = min(aliado.salud + 30, aliado.salud_max)
+        return f"{self.nombre} aplicó primeros auxilios a {aliado.nombre}. Salud: {aliado.salud}/{aliado.salud_max}"
 
 class Instructor(Personaje):
     def __init__(self, nombre= "Instructor"):
         super().__init__(nombre, salud=90, fuerza=90, defensa=55)
-        self.esta_provocando = False
 
-    def provocar(self):
-        self.esta_provocando = True
-        self.defensa += 15
-        return f"{self.nombre} da un grito para atraer la atención y su defensa aumenta temporalmente"
+    def usar_habilidad(self, equipo, enemigos):
+        self.estados_alterados.agregar("Provocando", 1)
+        return f"{self.nombre} da un grito para atraer a los enemigos. Este turno recibe la mitad de daño"
 
 class Rider(Personaje):
     def __init__(self, nombre= "Rider"):
         super().__init__(nombre, salud=95, fuerza=85, defensa=45)
+
+    def usar_habilidad(self, equipo, enemigos):
+        for enemigo in enemigos:
+            if enemigo.vive():
+                danio = enemigo.recibir_danio(self.fuerza // 2)
+                print(f"{enemigo.nombre} recibe {danio} de daño")
+                if not enemigo.vive():
+                    print(f"{enemigo.nombre} fue derrotado")
+        return f"{self.nombre} hizo una bajada extrema contra todos los enemigos"

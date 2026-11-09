@@ -11,6 +11,7 @@ class Combate:
         self.caidos = caidos
         self.orden_turnos = TurnosCombate()
         self.pendientes = []
+        self.habilidades_usadas = []
         self.preparar_combate()
 
     def preparar_combate(self):
@@ -37,6 +38,9 @@ class Combate:
         vivos = [p for p in self.equipo if p.vive()]
         if vivos:
             personaje = random.choice(vivos)
+            for candidato in vivos:
+                if candidato.estados_alterados.tiene("Provocando"):
+                    personaje = candidato
             danio = enemigo.atacar(personaje)
             print(f"{enemigo.nombre} ataca a {personaje.nombre} y causa {danio} de daño")
             self.registrar_caidos()
@@ -141,15 +145,27 @@ class Combate:
             return True
         return False
 
+    def usar_habilidad(self, personaje):
+        if personaje in self.habilidades_usadas or personaje.estados_alterados.tiene("Aturdimiento"):
+            print(f"{personaje.nombre} no puede usar su habilidad ahora")
+            return False
+        self.habilidades_usadas.append(personaje)
+        print(personaje.usar_habilidad(self.equipo, self.enemigos))
+        return True
+
     def turno_personaje(self, personaje):
         while True:
             print(f"¿Qué hace {personaje.nombre}?")
             print("1. Atacar")
             print("2. Abrir mochila")
-            if pedir_opcion("> ", 1, 2) == 1:
+            print("3. Usar habilidad")
+            opcion = pedir_opcion("> ", 1, 3)
+            if opcion == 1:
                 self.atacar_enemigo(personaje)
                 return
-            if self.usar_item():
+            if opcion == 2 and self.usar_item():
+                return
+            if opcion == 3 and self.usar_habilidad(personaje):
                 return
 
     def iniciar(self):
