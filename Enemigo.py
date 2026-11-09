@@ -22,7 +22,7 @@ class Enemigo(Personaje):
         if self.turnos_atacados == 3:
             estados_posibles = ["Congelamiento", "Ceguera", "Hipotermia", "Aturdimiento"]
             estado_aplicado = random.choice(estados_posibles)
-            objetivo.estados_alterados.apilar(estado_aplicado)
+            objetivo.estados_alterados.agregar(estado_aplicado)
             print(f"El {self.nombre} provocó '{estado_aplicado}' a {objetivo.nombre}")
             self.turnos_atacados = 0
         return danio
@@ -77,7 +77,7 @@ class AlpinistaInfectado(Enemigo):
         
         if danio > 0 and random.random() < 0.30:  #probabilidad de contagiar la bacteria
             print(f"La bacteria del hielo de {self.nombre} infecta las heridas de {objetivo.nombre}")
-            objetivo.estados_alterados.apilar("Necrosis")
+            objetivo.estados_alterados.agregar("Necrosis")
         return danio
 
 class Yeti(Enemigo):
@@ -87,8 +87,9 @@ class Yeti(Enemigo):
         self.fase_avalancha = False
         
     def recibir_danio(self, danio):
-        super().recibir_danio(danio)
+        danio_final = super().recibir_danio(danio)
         
         if self.salud <= self.salud_max // 2 and not self.fase_avalancha:
             self.fase_avalancha = True
             self.fuerza += 15
+        return danio_final

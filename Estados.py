@@ -1,20 +1,28 @@
 class Estados:
-    
+
     def __init__(self):
-        self._estados  = []
-        
-    def apilar(self, estado):
-        self._estados.append(estado)
+        self._estados = {}
 
-    def desapilar(self):
-        if self.esta_vacia():
-            return None
-        return self._estados.pop()
+    def agregar(self, estado, turnos=4):
+        self._estados[estado] = turnos
 
-    def esta_vacia(self):
-        return len(self._estados) == 0
-        
-    def ver_tope(self):
-        if not self.esta_vacia():
-            return self._estados[-1]
-        return None
+    def tiene(self, estado):
+        return estado in self._estados
+
+    def quitar(self, estado):
+        self._estados.pop(estado, None)
+
+    def limpiar(self):
+        self._estados.clear()
+
+    def pasar_turno(self):
+        for estado in list(self._estados):
+            if estado != "Necrosis":
+                self._estados[estado] -= 1
+                if self._estados[estado] == 0:
+                    self.quitar(estado)
+
+    def texto(self):
+        if not self._estados:
+            return ""
+        return " [" + ", ".join(self._estados) + "]"

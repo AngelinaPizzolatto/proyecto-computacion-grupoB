@@ -59,7 +59,7 @@ class Combate:
             self.pendientes = [p for p in self.equipo if p.vive()]
         print("¿Qué personaje actúa?")
         for i, personaje in enumerate(self.pendientes, 1):
-            print(f"{i}. {personaje.nombre} - Salud: {personaje.salud}/{personaje.salud_max}")
+            print(f"{i}. {personaje.nombre} - Salud: {personaje.salud}/{personaje.salud_max}{personaje.estados_alterados.texto()}")
         return self.pendientes.pop(pedir_opcion("> ", 1, len(self.pendientes)) - 1)
 
     def elegir_enemigo(self):
@@ -76,6 +76,11 @@ class Combate:
             self.ejecutar_turno_enemigo(enemigo)
             enemigo = self.obtener_siguiente_turno()
 
+    def aplicar_estados(self):
+        for personaje in self.equipo:
+            if personaje.vive():
+                personaje.procesar_estados()
+
     def iniciar(self):
         while not self.combate_terminado():
             personaje = self.elegir_personaje()
@@ -85,6 +90,8 @@ class Combate:
                 print(f"{personaje.nombre} ataca a {objetivo.nombre} y causa {danio} de daño")
             if not objetivo.vive():
                 print(f"{objetivo.nombre} fue derrotado")
-            self.turno_enemigos()
+            if not self.combate_terminado():
+                self.turno_enemigos()
+                self.aplicar_estados()
 
         return self.finalizar_combate() == "victoria"

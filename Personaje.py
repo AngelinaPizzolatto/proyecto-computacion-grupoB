@@ -42,48 +42,49 @@ class Personaje():
         return self.salud > 0
     
     def atacar(self, objetivo):
-        estado_actual = self.estados_alterados.ver_tope()
+        estados = self.estados_alterados
         fuerza_efectiva = self.fuerza
-        
-        if estado_actual == "Aturdimiento":
+
+        if estados.tiene("Aturdimiento"):
             print(f"{self.nombre} fue aturdido por la Escarcha. Pierde su turno")
             return 0
-        
-        if estado_actual == "Hipotermia":
-            dano_hipotermia = 5
-            self.salud = max(self.salud - dano_hipotermia, 0)
-            print(f"{self.nombre} sufre {dano_hipotermia} de daño por Hipotermia.")
-            if not self.vive():
-                print(f"{self.nombre} ha caído por la Hipotermia antes de poder atacar")
-                return 0
-            
-        if estado_actual == "Ceguera":
-            fuerza_efectiva = self.fuerza // 2
+
+        if estados.tiene("Ceguera"):
+            fuerza_efectiva = fuerza_efectiva // 2
             print(f"{self.nombre} tiene Ceguera. Su ataque es demasiado débil")
-            
-        if estado_actual == "Necrosis":
-            dano_necrosis = 8
-            self.salud = max(self.salud - dano_necrosis, 0)
-            fuerza_efectiva = int(self.fuerza * 0.75) 
-            
-            print(f"[{self.nombre} sufre {dano_necrosis} de daño por Necrosis y su cuerpo se debilita")
-            if not self.vive():
-                print(f"{self.nombre} ha muerto a causa de la Necrosis")
-                return 0
-        
+
+        if estados.tiene("Necrosis"):
+            fuerza_efectiva = int(fuerza_efectiva * 0.75)
+            print(f"La Necrosis debilita el ataque de {self.nombre}")
+
         danio = max(fuerza_efectiva - (objetivo.defensa //2), 1)
-        objetivo.recibir_danio(danio)
-        return danio
-    
+        return objetivo.recibir_danio(danio)
+
     def recibir_danio(self,danio):
-        estado_actual = self.estados_alterados.ver_tope()
-        if estado_actual == "Congelamiento":
+        if self.estados_alterados.tiene("Congelamiento"):
             danio_extra = 5
             danio += danio_extra
             print(f"La armadura de {self.nombre} está frágil por el Congelamiento. Recibe {danio_extra} de daño extra")
-        
+
+        if self.estados_alterados.tiene("Necrosis"):
+            danio = int(danio * 1.25)
+
         self.salud = max(self.salud - danio, 0)
-        
+        return danio
+
+    def procesar_estados(self):
+        if self.estados_alterados.tiene("Hipotermia"):
+            self.salud = max(self.salud - 5, 0)
+            print(f"{self.nombre} sufre 5 de daño por Hipotermia")
+
+        if self.estados_alterados.tiene("Necrosis"):
+            self.salud = max(self.salud - 8, 0)
+            print(f"{self.nombre} sufre 8 de daño por Necrosis")
+
+        self.estados_alterados.pasar_turno()
+        if not self.vive():
+            print(f"{self.nombre} ha caído por sus heridas")
+
     def ganar_experiencia(self, cantidad):
         self.experiencia += cantidad
         while self.experiencia >= self.experiencia_para_subir():
