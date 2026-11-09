@@ -10,12 +10,6 @@ class Enemigo(Personaje):
         self.turnos_atacados = 0
         self.algun_item = algun_item
         
-    def get_algun_item(self):
-        return self.algun_item
-    
-    def set_algun_item(self, algun_item):
-        self.algun_item = algun_item
-    
     def atacar(self,objetivo):
         danio = super().atacar(objetivo)
         self.turnos_atacados +=1
@@ -48,13 +42,9 @@ def generar_enemigo(pista):
     fuerza = random.randint(*rango_fuerza)
     defensa = random.randint(*rango_defensa)
     experiencia = salud // 4
-    item_drop = random.choice(ITEMS + [None]) if 'ITEMS' in globals() else None
+    item_drop = random.choice(ITEMS) if random.random() < 0.35 else None
     return Enemigo(nombre, salud, fuerza, defensa, experiencia, item_drop)
 
-def entregar_drop(enemigo, mochila):
-    if enemigo.algun_item is not None:
-        mochila.guardar(enemigo.algun_item)
-        
 def generar_jefe(pista):
     if pista == "pista_roja":
         return Yeti()

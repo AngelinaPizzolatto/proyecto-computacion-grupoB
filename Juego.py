@@ -4,14 +4,17 @@ from Sector import Sector
 from Enemigo import generar_jefe
 from Combate import Combate
 from Interfaz import pausar
+from Mochila import Mochila
 
 class Juego:
     def __init__(self):
         self.equipo = []
+        self.mochila = Mochila()
         self.sector_inicial = None
-        
+
     def crear_equipo(self):
         self.equipo = [Rescatista(), Instructor(), Rider()]
+        self.mochila = Mochila()
         
     def crear_mapa(self):
         sector1 = Sector("Sendero del bosque muerto", "pista_verde", 3, Narrativa.TRANSICION_1)
@@ -30,7 +33,7 @@ class Juego:
     def pelear(self, enemigos):
         nombres = ", ".join(e.nombre for e in enemigos)
         print(f"¡Comienza el combate contra {nombres}!")
-        combate = Combate(self.equipo, enemigos)
+        combate = Combate(self.equipo, enemigos, self.mochila)
         return combate.iniciar()
 
     def recorrer_mapa(self):

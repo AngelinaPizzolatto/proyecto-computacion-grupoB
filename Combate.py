@@ -1,11 +1,13 @@
 import random
 from TurnosCombate import TurnosCombate
 from Interfaz import pedir_opcion
+from Item import ItemPermanente
 
 class Combate:
-    def __init__(self, equipo, enemigos):
+    def __init__(self, equipo, enemigos, mochila):
         self.equipo = equipo
         self.enemigos = enemigos
+        self.mochila = mochila
         self.orden_turnos = TurnosCombate()
         self.pendientes = []
         self.preparar_combate()
@@ -37,12 +39,30 @@ class Combate:
             danio = enemigo.atacar(personaje)
             print(f"{enemigo.nombre} ataca a {personaje.nombre} y causa {danio} de daño")
     
+    def elegir_aliado(self, pregunta):
+        vivos = [p for p in self.equipo if p.vive()]
+        print(pregunta)
+        for i, personaje in enumerate(vivos, 1):
+            print(f"{i}. {personaje.nombre} - Salud: {personaje.salud}/{personaje.salud_max}")
+        return vivos[pedir_opcion("> ", 1, len(vivos)) - 1]
+
+    def recoger_drops(self):
+        for enemigo in self.enemigos:
+            item = enemigo.algun_item
+            if isinstance(item, ItemPermanente):
+                print(f"\n{enemigo.nombre} dejó {item.nombre}: {item.descripcion}")
+                item.aplicar(self.elegir_aliado("¿Quién lo usa?"))
+            elif item is not None:
+                self.mochila.guardar(item)
+                print(f"\n{enemigo.nombre} dejó {item.nombre}. Se guardó en la mochila")
+
     def finalizar_combate(self):
         if not any(e.vive() for e in self.enemigos):
             exp_ganada = sum(e.experiencia_asignada for e in self.enemigos)
             for personaje in self.equipo:
                 if personaje.vive():
                     personaje.ganar_experiencia(exp_ganada)
+            self.recoger_drops()
             return "victoria"
         if not any(p.vive() for p in self.equipo):
             return "derrota"
