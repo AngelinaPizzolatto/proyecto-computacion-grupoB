@@ -32,6 +32,19 @@ VICTORIA = ''' VICTORIA
 El gigante cae exhausto y retrocede. Ha comprendido que no son el enemigo. 
 El hongo comienza a ceder. Lograron sobrevivir al Misterio Alpino '''
 
+ACERTIJO_1 = '''El sendero se divide y una tormenta se acerca. ¿Por dónde siguen?
+1. Por el puente de hielo, que tiene grietas pero es el camino más corto
+2. Por el borde del bosque, siguiendo las marcas de los mineros
+3. Por el fondo del valle, donde se acumula la nieve de las laderas'''
+
+ACERTIJO_2 = '''Una nota en la pared dice: "El hongo duerme en lo oscuro y huye del fuego".
+Tres puertas llevan a la salida del campamento. ¿Cuál eligen?
+1. La del túnel sin luz
+2. La del depósito inundado
+3. La de la sala de calderas, todavía encendidas'''
+
+ACERTIJOS = {"pista_verde": (ACERTIJO_1, 2), "pista_amarilla": (ACERTIJO_2, 3)}
+
 DERROTA = '''GAME OVER
 El frío y la infección terminan el trabajo. 
 La patrulla ahora es parte del eterno hielo de Svalbard'''
