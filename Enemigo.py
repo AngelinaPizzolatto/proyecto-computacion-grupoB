@@ -1,4 +1,5 @@
 import random
+import Narrativa
 from Personaje import Personaje
 from Item import *
 from Estados import *
@@ -77,7 +78,8 @@ class Yeti(Enemigo):
     def recibir_danio(self, danio):
         danio_final = super().recibir_danio(danio)
         
-        if self.salud <= self.salud_max // 2 and not self.fase_avalancha:
+        if self.vive() and self.salud <= self.salud_max // 2 and not self.fase_avalancha:
             self.fase_avalancha = True
             self.fuerza += 15
+            print(Narrativa.AVALANCHA)
         return danio_final
