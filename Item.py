@@ -21,6 +21,18 @@ class ItemConsumible(Item):
         print(f"{personaje.nombre} ahora tiene {personaje.salud}/{personaje.salud_max} de salud")
         return True
 
+class ItemAntifungico(ItemConsumible):
+    def __init__(self, nombre, descripcion):
+        super().__init__(nombre, descripcion, 0)
+
+    def aplicar(self, personaje):
+        if not personaje.estados_alterados.tiene("Necrosis"):
+            print(f"{personaje.nombre} no tiene Necrosis")
+            return False
+        personaje.estados_alterados.quitar("Necrosis")
+        print(f"{personaje.nombre} se curó de la Necrosis")
+        return True
+
 class ItemPermanente(Item):
     def __init__(self, nombre, descripcion, atributo, cantidad):
         super().__init__(nombre, descripcion)
@@ -39,8 +51,10 @@ class ItemPermanente(Item):
             personaje.set_salud_max(valor_actual + self.cantidad)
 
 BOTIQUIN = ItemConsumible("Botiquín", "Restaura 40 de calor corporal", cantidad_salud=40)
+ANTIFUNGICO = ItemAntifungico("Antifúngico", "Cura la Necrosis")
 
 ITEMS = [
+    ANTIFUNGICO,
     ItemConsumible("Termo caliente", "Restaura calor corporal", cantidad_salud=25),
     ItemConsumible("Barrita energética", "Restaura calor corporal", cantidad_salud=15),
     ItemPermanente("Piolet reforzado", "Mejora la técnica de forma permanente", atributo="fuerza", cantidad=5),

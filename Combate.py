@@ -43,7 +43,7 @@ class Combate:
         vivos = [p for p in self.equipo if p.vive()]
         print(pregunta)
         for i, personaje in enumerate(vivos, 1):
-            print(f"{i}. {personaje.nombre} - Salud: {personaje.salud}/{personaje.salud_max}")
+            print(f"{i}. {personaje.nombre} - Salud: {personaje.salud}/{personaje.salud_max}{personaje.estados_alterados.texto()}")
         return vivos[pedir_opcion("> ", 1, len(vivos)) - 1]
 
     def recoger_drops(self):
