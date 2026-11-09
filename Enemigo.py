@@ -27,14 +27,16 @@ ENEMIGOS = {
         ("Ankor: Lobo ártico hambriento", (20, 30), (8, 14), (8, 12)), #Lobo ártico (ataques rápidos)
     ],
     "pista_amarilla": [
-        ("Guía zombie", (50, 70), (12, 20), (20, 30)), #Oso polar del norte (mucha salud, muchos golpes-quita mucha vida)
-        ("Nanuk: Oso polar mutado", (35, 50), (15, 22), (10, 16)),
+        ("Guía zombie", (40, 55), (10, 15), (12, 18)), #Oso polar del norte (mucha salud, muchos golpes-quita mucha vida)
+        ("Nanuk: Oso polar mutado", (30, 42), (12, 16), (8, 12)),
     ],
     "pista_roja": [
-        ("Médico ", (80, 110), (20, 28), (30, 40)),
-        ("Atlas: Alce gigante", (60, 90), (25, 35), (18, 25)),
+        ("Médico", (55, 75), (14, 20), (16, 24)),
+        ("Atlas: Alce gigante", (45, 65), (16, 22), (12, 18)),
     ],
 }
+
+INFECTADOS = ["Alpinista novato", "Guía zombie", "Médico"]
 
 def generar_enemigo(pista):
     nombre,rango_salud, rango_fuerza, rango_defensa = random.choice(ENEMIGOS[pista])
@@ -43,26 +45,21 @@ def generar_enemigo(pista):
     defensa = random.randint(*rango_defensa)
     experiencia = salud // 4
     item_drop = random.choice(ITEMS) if random.random() < 0.35 else None
+    if nombre in INFECTADOS:
+        return EnemigoInfectado(nombre, salud, fuerza, defensa, experiencia, item_drop)
     return Enemigo(nombre, salud, fuerza, defensa, experiencia, item_drop)
 
 def generar_jefe(pista):
-    if pista == "pista_roja":
-        return Yeti()
+    if pista == "pista_verde":
+        return EnemigoInfectado("Lobo Alfa Infectado", 110, 20, 12, 60, REANIMACION)
+    if pista == "pista_amarilla":
+        return EnemigoInfectado("Guía Corrupto Mayor", 190, 28, 22, 100, REANIMACION)
+    return Yeti()
 
-    jefe = generar_enemigo(pista)
-    jefe.nombre = f"Jefe: {jefe.nombre}"
-    jefe.salud = int(jefe.salud * 1.5)
-    jefe.salud_max = jefe.salud
-    jefe.fuerza = int(jefe.fuerza * 1.25)
-    jefe.defensa = int(jefe.defensa * 1.2)
-    jefe.experiencia_asignada *= 2
-    jefe.algun_item = REANIMACION
-    return jefe
+class EnemigoInfectado(Enemigo):
+    def __init__(self, nombre, salud, fuerza, defensa, experiencia_asignada, algun_item=None):
+        super().__init__(nombre, salud, fuerza, defensa, experiencia_asignada, algun_item)
 
-class AlpinistaInfectado(Enemigo):
-    def __init__(self, nombre, salud, fuerza, defensa):
-        super().__init__(nombre, salud, fuerza, defensa, experiencia_asignada=80, algun_item="Bacteria")
-        
     def atacar(self, objetivo):
         danio = super().atacar(objetivo)
         
@@ -73,7 +70,7 @@ class AlpinistaInfectado(Enemigo):
 
 class Yeti(Enemigo):
     def __init__(self):
-        super().__init__(nombre="Yeti", salud=250, fuerza=30, defensa=35,experiencia_asignada = 1000)
+        super().__init__(nombre="Gran Yeti", salud=480, fuerza=42, defensa=26,experiencia_asignada = 1000)
         self.algun_item = None
         self.fase_avalancha = False
         
