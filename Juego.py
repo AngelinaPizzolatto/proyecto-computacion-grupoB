@@ -3,7 +3,7 @@ from Personaje import Rescatista, Instructor, Rider
 from Sector import Sector
 from Enemigo import generar_jefe
 from Combate import Combate
-from Interfaz import pausar
+from Interfaz import pausar, pedir_opcion
 from Mochila import Mochila
 from Item import BOTIQUIN, ANTIFUNGICO
 from PilaCaidos import PilaCaidos
@@ -54,6 +54,19 @@ class Juego:
         self.desfibrilador = True
         pausar()
 
+    def acertijo(self, pista):
+        texto, correcta = Narrativa.ACERTIJOS[pista]
+        print(texto)
+        if pedir_opcion("> ", 1, 3) == correcta:
+            self.mochila.guardar(BOTIQUIN)
+            print("Decisión correcta. Encuentran un Botiquín y lo guardan en la mochila")
+        else:
+            print("Decisión equivocada. Cada personaje vivo pierde 15 de salud")
+            for personaje in self.equipo:
+                if personaje.vive():
+                    personaje.salud = max(personaje.salud - 15, 1)
+        pausar()
+
     def segunda_oportunidad(self, jefe):
         if not self.desfibrilador:
             return False
@@ -92,6 +105,7 @@ class Juego:
             if sector.tiene_siguiente():
                 print(sector.texto_transicion)
                 pausar()
+                self.acertijo(sector.clave_enemigos)
             sector = sector.get_siguiente()
         return True
     
