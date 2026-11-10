@@ -53,9 +53,9 @@ def generar_enemigo(pista):
 
 def generar_jefe(pista):
     if pista == "pista_verde":
-        return EnemigoInfectado("Lobo Alfa Infectado", 110, 20, 12, 60, REANIMACION)
+        return EnemigoInfectado("Lobo Alfa Infectado", 70, 38, 12, 60, REANIMACION)
     if pista == "pista_amarilla":
-        return EnemigoInfectado("Guía Corrupto Mayor", 190, 26, 22, 100, REANIMACION)
+        return EnemigoInfectado("Guía Corrupto Mayor", 110, 50, 22, 100, REANIMACION)
     return Yeti()
 
 class EnemigoInfectado(Enemigo):
@@ -72,7 +72,7 @@ class EnemigoInfectado(Enemigo):
 
 class Yeti(Enemigo):
     def __init__(self):
-        super().__init__(nombre="Gran Yeti", salud=480, fuerza=34, defensa=26,experiencia_asignada = 1000)
+        super().__init__(nombre="Gran Yeti", salud=220, fuerza=72, defensa=26,experiencia_asignada = 1000)
         self.fase_avalancha = False
         
     def recibir_danio(self, danio):
