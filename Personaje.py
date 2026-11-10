@@ -98,13 +98,13 @@ class Personaje():
         self.experiencia -= self.experiencia_para_subir()
         self.nivel += 1
         self.fuerza += 3
-        self.defensa += 2
+        self.defensa += 1
         self.salud_max += 12
         self.salud = self.salud_max 
     
 class Rescatista(Personaje):
     def __init__(self,nombre = "Rescatista"):
-        super().__init__(nombre, salud=150, fuerza=40, defensa=28)
+        super().__init__(nombre, salud=150, fuerza=40, defensa=16)
 
     def usar_habilidad(self, equipo, enemigos):
         aliado = self
@@ -116,7 +116,7 @@ class Rescatista(Personaje):
 
 class Instructor(Personaje):
     def __init__(self, nombre= "Instructor"):
-        super().__init__(nombre, salud=130, fuerza=46, defensa=23)
+        super().__init__(nombre, salud=130, fuerza=46, defensa=12)
 
     def usar_habilidad(self, equipo, enemigos):
         self.estados_alterados.agregar("Provocando", 1)
@@ -124,7 +124,7 @@ class Instructor(Personaje):
 
 class Rider(Personaje):
     def __init__(self, nombre= "Rider"):
-        super().__init__(nombre, salud=135, fuerza=43, defensa=21)
+        super().__init__(nombre, salud=135, fuerza=43, defensa=10)
 
     def usar_habilidad(self, equipo, enemigos):
         for enemigo in enemigos:

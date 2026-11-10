@@ -26,9 +26,9 @@ class Juego:
         self.mochila.guardar(ANTIFUNGICO)
         
     def crear_mapa(self):
-        sector1 = Sector("Sendero del bosque muerto", "pista_verde", 3, Narrativa.TRANSICION_1)
-        sector2 = Sector("Campamento Minero Abandonado", "pista_amarilla", 3, Narrativa.TRANSICION_2)
-        sector3 = Sector("Cumbre del Glaciar Corrupto", "pista_roja", 3, Narrativa.APARICION_YETI)
+        sector1 = Sector("Sendero del bosque muerto", "pista_verde", 1, Narrativa.TRANSICION_1)
+        sector2 = Sector("Campamento Minero Abandonado", "pista_amarilla", 1, Narrativa.TRANSICION_2)
+        sector3 = Sector("Cumbre del Glaciar Corrupto", "pista_roja", 1, Narrativa.APARICION_YETI)
         sector1.set_siguiente(sector2)
         sector2.set_siguiente(sector3)
         self.sector_inicial = sector1

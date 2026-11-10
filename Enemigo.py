@@ -25,15 +25,15 @@ class Enemigo(Personaje):
 ENEMIGOS = {
     "pista_verde": [
         ("Alpinista novato", (25, 40), (10, 18), (5, 10)),
-        ("Ankor: Lobo ártico hambriento", (20, 30), (8, 14), (8, 12)), #Lobo ártico (ataques rápidos)
+        ("Ankor - Lobo ártico hambriento", (20, 30), (8, 14), (8, 12)), #Lobo ártico (ataques rápidos)
     ],
     "pista_amarilla": [
         ("Guía zombie", (40, 55), (10, 15), (12, 18)), #Oso polar del norte (mucha salud, muchos golpes-quita mucha vida)
-        ("Nanuk: Oso polar mutado", (30, 42), (12, 16), (8, 12)),
+        ("Nanuk - Oso polar mutado", (30, 42), (12, 16), (8, 12)),
     ],
     "pista_roja": [
         ("Médico", (55, 75), (14, 20), (16, 24)),
-        ("Atlas: Alce gigante", (45, 65), (16, 22), (12, 18)),
+        ("Atlas - Alce gigante", (45, 65), (16, 22), (12, 18)),
     ],
 }
 
@@ -54,7 +54,7 @@ def generar_jefe(pista):
     if pista == "pista_verde":
         return EnemigoInfectado("Lobo Alfa Infectado", 110, 20, 12, 60, REANIMACION)
     if pista == "pista_amarilla":
-        return EnemigoInfectado("Guía Corrupto Mayor", 190, 28, 22, 100, REANIMACION)
+        return EnemigoInfectado("Guía Corrupto Mayor", 190, 26, 22, 100, REANIMACION)
     return Yeti()
 
 class EnemigoInfectado(Enemigo):
@@ -71,7 +71,7 @@ class EnemigoInfectado(Enemigo):
 
 class Yeti(Enemigo):
     def __init__(self):
-        super().__init__(nombre="Gran Yeti", salud=480, fuerza=42, defensa=26,experiencia_asignada = 1000)
+        super().__init__(nombre="Gran Yeti", salud=480, fuerza=34, defensa=26,experiencia_asignada = 1000)
         self.algun_item = None
         self.fase_avalancha = False
         
