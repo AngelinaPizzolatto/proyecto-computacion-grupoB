@@ -33,15 +33,12 @@ class Juego:
         sector2.set_siguiente(sector3)
         self.sector_inicial = sector1
         
-    def equipo_vivo(self):
-        for personaje in self.equipo:
-            if personaje.vive():
-                return True
-        return False
-
     def pelear(self, enemigos):
-        nombres = ", ".join(e.nombre for e in enemigos)
-        print(f"¡Comienza el combate contra {nombres}!")
+        nombres = []
+        for enemigo in enemigos:
+            nombres.append(enemigo.nombre)
+        texto_nombres = ", ".join(nombres)
+        print(f"¡Comienza el combate contra {texto_nombres}!")
         combate = Combate(self.equipo, enemigos, self.mochila, self.caidos)
         return combate.iniciar()
 

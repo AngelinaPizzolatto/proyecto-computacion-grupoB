@@ -14,6 +14,13 @@ class Combate:
         self.habilidades_usadas = []
         self.preparar_combate()
 
+    def obtener_vivos(self, personajes):
+        vivos = []
+        for personaje in personajes:
+            if personaje.vive():
+                vivos.append(personaje)
+        return vivos
+
     def preparar_combate(self):
         self.orden_turnos = TurnosCombate()
         for enemigo in self.enemigos:
@@ -35,7 +42,7 @@ class Combate:
         if not enemigo.vive():
             return
         
-        vivos = [p for p in self.equipo if p.vive()]
+        vivos = self.obtener_vivos(self.equipo)
         if vivos:
             personaje = random.choice(vivos)
             for candidato in vivos:
@@ -52,10 +59,12 @@ class Combate:
                 print(f"{personaje.nombre} ha caído")
 
     def elegir_aliado(self, pregunta):
-        vivos = [p for p in self.equipo if p.vive()]
+        vivos = self.obtener_vivos(self.equipo)
         print(pregunta)
-        for i, personaje in enumerate(vivos, 1):
-            print(f"{i}. {personaje.nombre} - Salud: {personaje.salud}/{personaje.salud_max}{personaje.estados_alterados.texto()}")
+        numero = 1
+        for personaje in vivos:
+            print(f"{numero}. {personaje.nombre} - Salud: {personaje.salud}/{personaje.salud_max}{personaje.estados_alterados.texto()}")
+            numero += 1
         return vivos[pedir_opcion("> ", 1, len(vivos)) - 1]
 
     def recoger_drops(self):
@@ -69,36 +78,42 @@ class Combate:
                 print(f"\n{enemigo.nombre} dejó {item.nombre}. Se guardó en la mochila")
 
     def finalizar_combate(self):
-        if not any(e.vive() for e in self.enemigos):
-            exp_ganada = sum(e.experiencia_asignada for e in self.enemigos)
+        if len(self.obtener_vivos(self.enemigos)) == 0:
+            exp_ganada = 0
+            for enemigo in self.enemigos:
+                exp_ganada += enemigo.experiencia_asignada
             for personaje in self.equipo:
                 if personaje.vive():
                     personaje.ganar_experiencia(exp_ganada)
             self.recoger_drops()
             return "victoria"
-        if not any(p.vive() for p in self.equipo):
+        if len(self.obtener_vivos(self.equipo)) == 0:
             return "derrota"
         return "en_curso"         
     
     def combate_terminado(self):
-        equipo_vivo = any(p.vive() for p in self.equipo)
-        enemigos_vivos = any(e.vive() for e in self.enemigos)
+        equipo_vivo = len(self.obtener_vivos(self.equipo)) > 0
+        enemigos_vivos = len(self.obtener_vivos(self.enemigos)) > 0
         return not equipo_vivo or not enemigos_vivos
 
     def elegir_personaje(self):
-        self.pendientes = [p for p in self.pendientes if p.vive()]
+        self.pendientes = self.obtener_vivos(self.pendientes)
         if not self.pendientes:
-            self.pendientes = [p for p in self.equipo if p.vive()]
+            self.pendientes = self.obtener_vivos(self.equipo)
         print("¿Qué personaje actúa?")
-        for i, personaje in enumerate(self.pendientes, 1):
-            print(f"{i}. {personaje.nombre} - Salud: {personaje.salud}/{personaje.salud_max}{personaje.estados_alterados.texto()}")
+        numero = 1
+        for personaje in self.pendientes:
+            print(f"{numero}. {personaje.nombre} - Salud: {personaje.salud}/{personaje.salud_max}{personaje.estados_alterados.texto()}")
+            numero += 1
         return self.pendientes.pop(pedir_opcion("> ", 1, len(self.pendientes)) - 1)
 
     def elegir_enemigo(self):
-        vivos = [e for e in self.enemigos if e.vive()]
+        vivos = self.obtener_vivos(self.enemigos)
         print("¿A qué enemigo ataca?")
-        for i, enemigo in enumerate(vivos, 1):
-            print(f"{i}. {enemigo.nombre} - Salud: {enemigo.salud}/{enemigo.salud_max}")
+        numero = 1
+        for enemigo in vivos:
+            print(f"{numero}. {enemigo.nombre} - Salud: {enemigo.salud}/{enemigo.salud_max}")
+            numero += 1
         return vivos[pedir_opcion("> ", 1, len(vivos)) - 1]
 
     def turno_enemigos(self):

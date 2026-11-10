@@ -20,5 +20,8 @@ class Sector:
     
     def generar_horda(self):
         cantidad = random.randint(1, 3)
-        return [generar_enemigo(self.clave_enemigos) for i in range(cantidad)]
+        horda = []
+        for i in range(cantidad):
+            horda.append(generar_enemigo(self.clave_enemigos))
+        return horda
         

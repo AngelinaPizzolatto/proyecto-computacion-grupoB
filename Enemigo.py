@@ -1,8 +1,7 @@
 import random
 import Narrativa
 from Personaje import Personaje
-from Item import *
-from Estados import *
+from Item import ITEMS, REANIMACION
 
 class Enemigo(Personaje):
     def __init__(self, nombre, salud, fuerza, defensa, experiencia_asignada, algun_item = None):
@@ -28,7 +27,7 @@ ENEMIGOS = {
         ("Ankor - Lobo ártico hambriento", (20, 30), (8, 14), (8, 12)), #Lobo ártico (ataques rápidos)
     ],
     "pista_amarilla": [
-        ("Guía zombie", (40, 55), (10, 15), (12, 18)), #Oso polar del norte (mucha salud, muchos golpes-quita mucha vida)
+        ("Guía zombie", (40, 55), (10, 15), (12, 18)),
         ("Nanuk - Oso polar mutado", (30, 42), (12, 16), (8, 12)),
     ],
     "pista_roja": [
@@ -45,7 +44,9 @@ def generar_enemigo(pista):
     fuerza = random.randint(*rango_fuerza)
     defensa = random.randint(*rango_defensa)
     experiencia = salud // 4
-    item_drop = random.choice(ITEMS) if random.random() < 0.35 else None
+    item_drop = None
+    if random.random() < 0.35:
+        item_drop = random.choice(ITEMS)
     if nombre in INFECTADOS:
         return EnemigoInfectado(nombre, salud, fuerza, defensa, experiencia, item_drop)
     return Enemigo(nombre, salud, fuerza, defensa, experiencia, item_drop)
@@ -72,7 +73,6 @@ class EnemigoInfectado(Enemigo):
 class Yeti(Enemigo):
     def __init__(self):
         super().__init__(nombre="Gran Yeti", salud=480, fuerza=34, defensa=26,experiencia_asignada = 1000)
-        self.algun_item = None
         self.fase_avalancha = False
         
     def recibir_danio(self, danio):
