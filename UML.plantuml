@@ -1,7 +1,7 @@
 @startuml Juego
 skinparam linetype ortho
-skinparam nodesep 80
-skinparam ranksep 60
+skinparam nodesep 60
+skinparam ranksep 40
 skinparam classAttributeIconSize 0
 skinparam shadowing false
 
@@ -28,16 +28,24 @@ class Personaje {
   +experiencia_para_subir() : int
   +subir_nivel()
 }
-class Rescatista { +usar_habilidad(equipo, enemigos) }
-class Instructor { +usar_habilidad(equipo, enemigos) }
-class Rider { +usar_habilidad(equipo, enemigos) }
+class Rescatista {
+  +usar_habilidad(equipo, enemigos)
+}
+class Instructor {
+  +usar_habilidad(equipo, enemigos)
+}
+class Rider {
+  +usar_habilidad(equipo, enemigos)
+}
 class Enemigo {
   +int experiencia_asignada
   +int turnos_atacados
   +Item algun_item
   +atacar(objetivo) : int
 }
-class EnemigoInfectado { +atacar(objetivo) : int }
+class EnemigoInfectado {
+  +atacar(objetivo) : int
+}
 class Yeti {
   +bool fase_avalancha
   +recibir_danio(danio) : int
@@ -60,8 +68,12 @@ class ItemConsumible {
   +int cantidad_salud
   +aplicar(personaje) : bool
 }
-class ItemAntifungico { +aplicar(personaje) : bool }
-class ItemReanimacion { +aplicar(caidos) : bool }
+class ItemAntifungico {
+  +aplicar(personaje) : bool
+}
+class ItemReanimacion {
+  +aplicar(caidos) : bool
+}
 class ItemPermanente {
   +str atributo
   +int cantidad
