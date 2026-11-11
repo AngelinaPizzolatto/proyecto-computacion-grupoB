@@ -100,7 +100,8 @@ class Personaje():
         self.fuerza += 3
         self.defensa += 1
         self.salud_max += 12
-        self.salud = self.salud_max 
+        self.salud = self.salud_max
+        print(f"¡{self.nombre} sube a nivel {self.nivel}! Fuerza +3, Defensa +1, Salud máx +12")
     
 class Rescatista(Personaje):
     def __init__(self,nombre = "Rescatista"):

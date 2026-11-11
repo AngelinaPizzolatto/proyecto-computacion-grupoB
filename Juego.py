@@ -13,7 +13,7 @@ class Juego:
         self.equipo = []
         self.mochila = Mochila()
         self.caidos = PilaCaidos()
-        self.sector_inicial = None
+        self.sectores = []
         self.desfibrilador = False
 
     def crear_equipo(self):
@@ -26,12 +26,11 @@ class Juego:
         self.mochila.guardar(ANTIFUNGICO)
         
     def crear_mapa(self):
-        sector1 = Sector("Sendero del bosque muerto", "pista_verde", 1, Narrativa.TRANSICION_1)
-        sector2 = Sector("Campamento Minero Abandonado", "pista_amarilla", 1, Narrativa.TRANSICION_2)
-        sector3 = Sector("Cumbre del Glaciar Corrupto", "pista_roja", 1, Narrativa.APARICION_YETI)
-        sector1.set_siguiente(sector2)
-        sector2.set_siguiente(sector3)
-        self.sector_inicial = sector1
+        self.sectores = [
+            Sector("Sendero del bosque muerto", "pista_verde", 1, Narrativa.TRANSICION_1),
+            Sector("Campamento minero abandonado", "pista_amarilla", 1, Narrativa.TRANSICION_2),
+            Sector("Cumbre del glaciar infectada", "pista_roja", 1, Narrativa.APARICION_YETI),
+        ]
         
     def pelear(self, enemigos):
         nombres = []
@@ -78,19 +77,19 @@ class Juego:
         return self.pelear([jefe])
 
     def recorrer_mapa(self):
-        sector = self.sector_inicial
-        while sector is not None:
-            if not sector.tiene_siguiente():
+        for sector in self.sectores:
+            es_ultimo = sector is self.sectores[-1]
+            if es_ultimo:
                 self.refugio()
 
-            print("=== " + sector.nombre + " ===")
+            print(f"\n{sector.nombre}")
             
             for i in range(sector.cantidad_encuentros):
                 print(f"Encuentro {i + 1} de {sector.cantidad_encuentros}")
                 if not self.pelear(sector.generar_horda()):
                     return False
 
-            if not sector.tiene_siguiente() and sector.texto_transicion:
+            if es_ultimo and sector.texto_transicion:
                 print(sector.texto_transicion)
                 pausar()
 
@@ -99,11 +98,10 @@ class Juego:
             if not self.pelear([jefe]) and not self.segunda_oportunidad(jefe):
                 return False
 
-            if sector.tiene_siguiente():
+            if not es_ultimo:
                 print(sector.texto_transicion)
                 pausar()
                 self.acertijo(sector.clave_enemigos)
-            sector = sector.get_siguiente()
         return True
     
     def jugar(self):

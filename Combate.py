@@ -179,6 +179,8 @@ class Combate:
             exp_ganada = 0
             for enemigo in self.enemigos:
                 exp_ganada += enemigo.experiencia_asignada
+            if exp_ganada > 0:
+                print(f"\nEl equipo gana {exp_ganada} de experiencia")
             for personaje in self.equipo:
                 if personaje.vive():
                     personaje.ganar_experiencia(exp_ganada)
