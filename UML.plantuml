@@ -26,7 +26,7 @@ class Personaje {
   +procesar_estados()
   +ganar_experiencia(cantidad)
   +experiencia_para_subir() : int
-  -subir_nivel()
+  +subir_nivel()
 }
 class Rescatista { +usar_habilidad(equipo, enemigos) }
 class Instructor { +usar_habilidad(equipo, enemigos) }
@@ -91,10 +91,6 @@ class Sector {
   +str clave_enemigos
   +int cantidad_encuentros
   +str texto_transicion
-  +Sector siguiente_sector
-  +get_siguiente() : Sector
-  +set_siguiente(sector)
-  +tiene_siguiente() : bool
   +generar_horda() : list
 }
 class Combate {
@@ -120,6 +116,7 @@ class Combate {
   +usar_item() : bool
   +usar_habilidad(personaje) : bool
   +aplicar_estados()
+  +obtener_vivos(personajes) : list
   +registrar_caidos()
   +recoger_drops()
   +finalizar_combate() : str
@@ -128,11 +125,10 @@ class Juego {
   +list equipo
   +Mochila mochila
   +PilaCaidos caidos
-  +Sector sector_inicial
+  +list sectores
   +bool desfibrilador
   +crear_equipo()
   +crear_mapa()
-  +equipo_vivo() : bool
   +pelear(enemigos) : bool
   +refugio()
   +acertijo(pista)
@@ -152,21 +148,22 @@ Item <|-- ItemPermanente
 ItemConsumible <|-- ItemAntifungico
 ItemConsumible <|-- ItemReanimacion
 
-Personaje *-- "1" Estados : estados_alterados
+Personaje "1" *-- "1" Estados : estados_alterados
 Juego "1" *-- "1" Mochila : mochila
 Juego "1" *-- "1" PilaCaidos : caidos
 Combate "1" *-- "1" TurnosCombate : orden_turnos
 Juego "1" *-- "3" Personaje : equipo
-Juego "1" *-- "1" Sector : sector_inicial
-Sector "1" --> "0..1" Sector : siguiente_sector
+Juego "1" *-- "3" Sector : sectores
 Enemigo "1" --> "0..1" Item : algun_item
 Mochila "1" --> "*" Item : items
 PilaCaidos "1" --> "*" Personaje : caidos
 Combate "1" --> "3" Personaje : equipo
-Combate "1" --> "1..3" Enemigo : enemigos
+Combate "1" --> "1..2" Enemigo : enemigos
 Combate "1" --> "1" Mochila : mochila
 Combate "1" --> "1" PilaCaidos : caidos
 Juego ..> Combate : crea
+Juego ..> Enemigo : genera jefe
+Combate ..> Item : usa
 Sector ..> Enemigo : genera
 Item ..> Personaje : modifica
 ItemReanimacion ..> PilaCaidos : reanima
@@ -186,7 +183,7 @@ object "rescatista : Rescatista" as rescatista {
   salud = 150
   salud_max = 150
   fuerza = 40
-  defensa = 28
+  defensa = 16
   nivel = 1
   experiencia = 0
 }
@@ -195,7 +192,7 @@ object "instructor : Instructor" as instructor {
   salud = 130
   salud_max = 130
   fuerza = 46
-  defensa = 23
+  defensa = 12
   nivel = 1
   experiencia = 0
 }
@@ -204,7 +201,7 @@ object "rider : Rider" as rider {
   salud = 135
   salud_max = 135
   fuerza = 43
-  defensa = 21
+  defensa = 10
   nivel = 1
   experiencia = 0
 }
@@ -232,17 +229,17 @@ object "ANTIFUNGICO : ItemAntifungico" as antifungico {
 object "sector1 : Sector" as sector1 {
   nombre = "Sendero del bosque muerto"
   clave_enemigos = "pista_verde"
-  cantidad_encuentros = 3
+  cantidad_encuentros = 1
 }
 object "sector2 : Sector" as sector2 {
-  nombre = "Campamento Minero Abandonado"
+  nombre = "Campamento minero abandonado"
   clave_enemigos = "pista_amarilla"
-  cantidad_encuentros = 3
+  cantidad_encuentros = 1
 }
 object "sector3 : Sector" as sector3 {
-  nombre = "Cumbre del Glaciar Corrupto"
+  nombre = "Cumbre del glaciar infectada"
   clave_enemigos = "pista_roja"
-  cantidad_encuentros = 3
+  cantidad_encuentros = 1
 }
 
 estado .. juego
@@ -254,9 +251,9 @@ instructor -- estados_instructor : estados_alterados
 rider -- estados_rider : estados_alterados
 juego -- mochila
 juego -- caidos
-juego -- sector1 : sector_inicial
-sector1 --> sector2 : siguiente_sector
-sector2 --> sector3 : siguiente_sector
+juego -- sector1 : sectores[0]
+juego -- sector2 : sectores[1]
+juego -- sector3 : sectores[2]
 mochila -- botiquin : items[0], items[1]
 mochila -- antifungico : items[2]
 @enduml
