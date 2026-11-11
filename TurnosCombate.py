@@ -1,4 +1,4 @@
-class TurnosCombate:  #Cola utilizada para manejar el orden de los turnos
+class TurnosCombate: 
     def __init__(self):
         self._combatientes = []
         

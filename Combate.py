@@ -19,101 +19,49 @@ class Combate:
         for enemigo in self.enemigos:
             if enemigo.vive():
                 self.orden_turnos.encolar(enemigo)
+    
+    def iniciar(self):
+        while not self.combate_terminado():
+            personaje = self.elegir_personaje()
+            self.turno_personaje(personaje)
+            if not self.combate_terminado():
+                self.turno_enemigos()
+                self.aplicar_estados()
 
-    def turno_jugador(self, personaje, objetivo, accion="atacar"):
-        if not personaje.vive():
-            return False
-        
-        if accion == "atacar":
-            return personaje.atacar(objetivo)
-        return False
-
-    def obtener_siguiente_turno(self):
-        return self.orden_turnos.desencolar()
-
-    def ejecutar_turno_enemigo(self, enemigo):
-        if not enemigo.vive():
-            return
-        
-        vivos = [p for p in self.equipo if p.vive()]
-        if vivos:
-            personaje = random.choice(vivos)
-            for candidato in vivos:
-                if candidato.estados_alterados.tiene("Provocando"):
-                    personaje = candidato
-            danio = enemigo.atacar(personaje)
-            print(f"{enemigo.nombre} ataca a {personaje.nombre} y causa {danio} de daño")
-            self.registrar_caidos()
-
-    def registrar_caidos(self):
-        for personaje in self.equipo:
-            if not personaje.vive() and not self.caidos.contiene(personaje):
-                self.caidos.apilar(personaje)
-                print(f"{personaje.nombre} ha caído")
-
-    def elegir_aliado(self, pregunta):
-        vivos = [p for p in self.equipo if p.vive()]
-        print(pregunta)
-        for i, personaje in enumerate(vivos, 1):
-            print(f"{i}. {personaje.nombre} - Salud: {personaje.salud}/{personaje.salud_max}{personaje.estados_alterados.texto()}")
-        return vivos[pedir_opcion("> ", 1, len(vivos)) - 1]
-
-    def recoger_drops(self):
-        for enemigo in self.enemigos:
-            item = enemigo.algun_item
-            if isinstance(item, ItemPermanente):
-                print(f"\n{enemigo.nombre} dejó {item.nombre}: {item.descripcion}")
-                item.aplicar(self.elegir_aliado("¿Quién lo usa?"))
-            elif item is not None:
-                self.mochila.guardar(item)
-                print(f"\n{enemigo.nombre} dejó {item.nombre}. Se guardó en la mochila")
-
-    def finalizar_combate(self):
-        if not any(e.vive() for e in self.enemigos):
-            exp_ganada = sum(e.experiencia_asignada for e in self.enemigos)
-            for personaje in self.equipo:
-                if personaje.vive():
-                    personaje.ganar_experiencia(exp_ganada)
-            self.recoger_drops()
-            return "victoria"
-        if not any(p.vive() for p in self.equipo):
-            return "derrota"
-        return "en_curso"         
+        return self.finalizar_combate() == "victoria"
     
     def combate_terminado(self):
-        equipo_vivo = any(p.vive() for p in self.equipo)
-        enemigos_vivos = any(e.vive() for e in self.enemigos)
+        equipo_vivo = len(self.obtener_vivos(self.equipo)) > 0
+        enemigos_vivos = len(self.obtener_vivos(self.enemigos)) > 0
         return not equipo_vivo or not enemigos_vivos
-
+    
+    
     def elegir_personaje(self):
-        self.pendientes = [p for p in self.pendientes if p.vive()]
+        self.pendientes = self.obtener_vivos(self.pendientes)
         if not self.pendientes:
-            self.pendientes = [p for p in self.equipo if p.vive()]
+            self.pendientes = self.obtener_vivos(self.equipo)
         print("¿Qué personaje actúa?")
-        for i, personaje in enumerate(self.pendientes, 1):
-            print(f"{i}. {personaje.nombre} - Salud: {personaje.salud}/{personaje.salud_max}{personaje.estados_alterados.texto()}")
+        numero = 1
+        for personaje in self.pendientes:
+            print(f"{numero}. {personaje.nombre} - Salud: {personaje.salud}/{personaje.salud_max}{personaje.estados_alterados.texto()}")
+            numero += 1
         return self.pendientes.pop(pedir_opcion("> ", 1, len(self.pendientes)) - 1)
-
-    def elegir_enemigo(self):
-        vivos = [e for e in self.enemigos if e.vive()]
-        print("¿A qué enemigo ataca?")
-        for i, enemigo in enumerate(vivos, 1):
-            print(f"{i}. {enemigo.nombre} - Salud: {enemigo.salud}/{enemigo.salud_max}")
-        return vivos[pedir_opcion("> ", 1, len(vivos)) - 1]
-
-    def turno_enemigos(self):
-        self.preparar_combate()
-        enemigo = self.obtener_siguiente_turno()
-        while enemigo is not None:
-            self.ejecutar_turno_enemigo(enemigo)
-            enemigo = self.obtener_siguiente_turno()
-
-    def aplicar_estados(self):
-        for personaje in self.equipo:
-            if personaje.vive():
-                personaje.procesar_estados()
-                self.registrar_caidos()
-
+    
+    def turno_personaje(self, personaje):
+        while True:
+            print(f"¿Qué hace {personaje.nombre}?")
+            print("1. Atacar")
+            print("2. Abrir mochila")
+            print("3. Usar habilidad")
+            opcion = pedir_opcion("> ", 1, 3)
+            if opcion == 1:
+                self.atacar_enemigo(personaje)
+                return
+            if opcion == 2 and self.usar_item():
+                return
+            if opcion == 3 and self.usar_habilidad(personaje):
+                return
+            
     def atacar_enemigo(self, personaje):
         objetivo = self.elegir_enemigo()
         danio = self.turno_jugador(personaje, objetivo)
@@ -121,7 +69,15 @@ class Combate:
             print(f"{personaje.nombre} ataca a {objetivo.nombre} y causa {danio} de daño")
         if not objetivo.vive():
             print(f"{objetivo.nombre} fue derrotado")
-
+            
+    def turno_jugador(self, personaje, objetivo, accion="atacar"):
+        if not personaje.vive():
+            return False
+        
+        if accion == "atacar":
+            return personaje.atacar(objetivo)
+        return False
+    
     def usar_item(self):
         if self.mochila.esta_vacia():
             print("La mochila está vacía")
@@ -152,28 +108,95 @@ class Combate:
         self.habilidades_usadas.append(personaje)
         print(personaje.usar_habilidad(self.equipo, self.enemigos))
         return True
+    
+    def elegir_enemigo(self):
+        vivos = self.obtener_vivos(self.enemigos)
+        print("¿A qué enemigo ataca?")
+        numero = 1
+        for enemigo in vivos:
+            print(f"{numero}. {enemigo.nombre} - Salud: {enemigo.salud}/{enemigo.salud_max}")
+            numero += 1
+        return vivos[pedir_opcion("> ", 1, len(vivos)) - 1]
 
-    def turno_personaje(self, personaje):
-        while True:
-            print(f"¿Qué hace {personaje.nombre}?")
-            print("1. Atacar")
-            print("2. Abrir mochila")
-            print("3. Usar habilidad")
-            opcion = pedir_opcion("> ", 1, 3)
-            if opcion == 1:
-                self.atacar_enemigo(personaje)
-                return
-            if opcion == 2 and self.usar_item():
-                return
-            if opcion == 3 and self.usar_habilidad(personaje):
-                return
+    def elegir_aliado(self, pregunta):
+        vivos = self.obtener_vivos(self.equipo)
+        print(pregunta)
+        numero = 1
+        for personaje in vivos:
+            print(f"{numero}. {personaje.nombre} - Salud: {personaje.salud}/{personaje.salud_max}{personaje.estados_alterados.texto()}")
+            numero += 1
+        return vivos[pedir_opcion("> ", 1, len(vivos)) - 1]
+    
+    
+    
+    def turno_enemigos(self):
+        self.preparar_combate()
+        enemigo = self.obtener_siguiente_turno()
+        while enemigo is not None:
+            self.ejecutar_turno_enemigo(enemigo)
+            enemigo = self.obtener_siguiente_turno()
 
-    def iniciar(self):
-        while not self.combate_terminado():
-            personaje = self.elegir_personaje()
-            self.turno_personaje(personaje)
-            if not self.combate_terminado():
-                self.turno_enemigos()
-                self.aplicar_estados()
+    def obtener_siguiente_turno(self):
+        return self.orden_turnos.desencolar()
 
-        return self.finalizar_combate() == "victoria"
+    def ejecutar_turno_enemigo(self, enemigo):
+        if not enemigo.vive():
+            return
+        vivos = self.obtener_vivos(self.equipo)
+        if vivos:
+            personaje = random.choice(vivos)
+            for candidato in vivos:
+                if candidato.estados_alterados.tiene("Provocando"):
+                    personaje = candidato
+            danio = enemigo.atacar(personaje)
+            print(f"{enemigo.nombre} ataca a {personaje.nombre} y causa {danio} de daño")
+            self.registrar_caidos()
+
+
+    def aplicar_estados(self):
+        for personaje in self.equipo:
+            if personaje.vive():
+                personaje.procesar_estados()
+                self.registrar_caidos()
+                
+    def obtener_vivos(self, personajes):
+        vivos = []
+        for personaje in personajes:
+            if personaje.vive():
+                vivos.append(personaje)
+        return vivos
+
+    def registrar_caidos(self):
+        for personaje in self.equipo:
+            if not personaje.vive() and not self.caidos.contiene(personaje):
+                self.caidos.apilar(personaje)
+                print(f"{personaje.nombre} ha caído")
+                
+                
+                
+    def finalizar_combate(self):
+        if len(self.obtener_vivos(self.enemigos)) == 0:
+            exp_ganada = 0
+            for enemigo in self.enemigos:
+                exp_ganada += enemigo.experiencia_asignada
+            if exp_ganada > 0:
+                print(f"\nEl equipo gana {exp_ganada} de experiencia")
+            for personaje in self.equipo:
+                if personaje.vive():
+                    personaje.ganar_experiencia(exp_ganada)
+            self.recoger_drops()
+            return "victoria"
+        if len(self.obtener_vivos(self.equipo)) == 0:
+            return "derrota"
+        return "en_curso"     
+
+    def recoger_drops(self):
+        for enemigo in self.enemigos:
+            item = enemigo.algun_item
+            if isinstance(item, ItemPermanente):
+                print(f"\n{enemigo.nombre} dejó {item.nombre}: {item.descripcion}")
+                item.aplicar(self.elegir_aliado("¿Quién lo usa?"))
+            elif item is not None:
+                self.mochila.guardar(item)
+                print(f"\n{enemigo.nombre} dejó {item.nombre}. Se guardó en la mochila")    
+    
