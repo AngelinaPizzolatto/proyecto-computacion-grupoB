@@ -1,125 +1,262 @@
 @startuml Juego
-
 skinparam linetype ortho
 skinparam nodesep 80
 skinparam ranksep 60
 skinparam classAttributeIconSize 0
 skinparam shadowing false
-skinparam roundcorner 8
 
 class Personaje {
-    +str nombre
-    +int salud
-    +int salud_max
-    +int fuerza
-    +int defensa
-    +int nivel
-    +int experiencia
-    +vive()
-    +atacar(objetivo)
-    +recibir_danio(danio)
-    +ganar_experiencia(cantidad)
-    -subir_nivel()
+  +str nombre
+  +int salud
+  +int salud_max
+  +int fuerza
+  +int defensa
+  +int nivel
+  +int experiencia
+  +Estados estados_alterados
+  +get_fuerza()
+  +get_defensa()
+  +get_salud_max()
+  +set_fuerza(nuevo_valor)
+  +set_defensa(nuevo_valor)
+  +set_salud_max(nuevo_valor)
+  +vive() : bool
+  +atacar(objetivo) : int
+  +recibir_danio(danio) : int
+  +procesar_estados()
+  +ganar_experiencia(cantidad)
+  +experiencia_para_subir() : int
+  -subir_nivel()
 }
-
-class Rescatista
-class Instructor
-class Rider {
-}
-
+class Rescatista { +usar_habilidad(equipo, enemigos) }
+class Instructor { +usar_habilidad(equipo, enemigos) }
+class Rider { +usar_habilidad(equipo, enemigos) }
 class Enemigo {
-    +int experiencia_otorgada
-    +str item_posible
+  +int experiencia_asignada
+  +int turnos_atacados
+  +Item algun_item
+  +atacar(objetivo) : int
 }
-
+class EnemigoInfectado { +atacar(objetivo) : int }
 class Yeti {
-    +bool fase_avalancha
-    +recibir_danio(danio)
+  +bool fase_avalancha
+  +recibir_danio(danio) : int
 }
-
+class Estados {
+  -dict _estados
+  +agregar(estado, turnos)
+  +tiene(estado) : bool
+  +quitar(estado)
+  +limpiar()
+  +pasar_turno()
+  +texto() : str
+}
 class Item {
-    +str nombre
-    +str descripcion
-    +aplicar(personaje)
-    +info() : str
+  +str nombre
+  +str descripcion
+  +aplicar(personaje)
 }
-
 class ItemConsumible {
-    +int cantidad_salud
-    +aplicar(personaje)
+  +int cantidad_salud
+  +aplicar(personaje) : bool
 }
-
+class ItemAntifungico { +aplicar(personaje) : bool }
+class ItemReanimacion { +aplicar(caidos) : bool }
 class ItemPermanente {
-    +str atributo
-    +int cantidad
-    +aplicar(personaje)
+  +str atributo
+  +int cantidad
+  +aplicar(personaje)
 }
-
-class Combate {
-    +list equipo
-    +Personaje enemigo
-    +turno_jugador(personaje, objetivo)
-    +turno_enemigo()
-    +combate_terminado() : bool
-}
-
 class Mochila {
-    -list items
-    +guardar(item)
-    +sacar_ultimo() : Item
-    +esta_vacia() : bool
+  +list items
+  +guardar(item)
+  +sacar(posicion) : Item
+  +esta_vacia() : bool
 }
-
-class Emboscada {
-    -list enemigos
-    +sumar(enemigo)
-    +sacar_primero() : Personaje
-    +esta_vacia() : bool
+class PilaCaidos {
+  +list caidos
+  +apilar(personaje)
+  +desapilar() : Personaje
+  +esta_vacia() : bool
+  +contiene(personaje) : bool
 }
-
+class TurnosCombate {
+  -list _combatientes
+  +encolar(combatiente)
+  +desencolar()
+  +esta_vacia() : bool
+}
 class Sector {
-    +str nombre
-    +str narracion
-    +Emboscada enemigos
-    +Personaje jefe
-    +Sector siguiente
-    +generar_enemigos(cantidad)
-    +siguiente_enemigo() : Personaje
-    +quedan_enemigos() : bool
+  +str nombre
+  +str clave_enemigos
+  +int cantidad_encuentros
+  +str texto_transicion
+  +Sector siguiente_sector
+  +get_siguiente() : Sector
+  +set_siguiente(sector)
+  +tiene_siguiente() : bool
+  +generar_horda() : list
 }
-
-class Main {
-    +list equipo
-    +Sector sector_actual
-    +Mochila mochila
-    +iniciar()
-    +jugar_sector(sector)
-    +repartir_experiencia(cantidad)
-    +usar_item(personaje)
-    +reiniciar()
+class Combate {
+  +list equipo
+  +list enemigos
+  +Mochila mochila
+  +PilaCaidos caidos
+  +TurnosCombate orden_turnos
+  +list pendientes
+  +list habilidades_usadas
+  +preparar_combate()
+  +turno_jugador(personaje, objetivo, accion)
+  +obtener_siguiente_turno()
+  +ejecutar_turno_enemigo(enemigo)
+  +combate_terminado() : bool
+  +iniciar() : bool
+  +elegir_personaje() : Personaje
+  +elegir_enemigo() : Enemigo
+  +elegir_aliado(pregunta) : Personaje
+  +turno_personaje(personaje)
+  +turno_enemigos()
+  +atacar_enemigo(personaje)
+  +usar_item() : bool
+  +usar_habilidad(personaje) : bool
+  +aplicar_estados()
+  +registrar_caidos()
+  +recoger_drops()
+  +finalizar_combate() : str
+}
+class Juego {
+  +list equipo
+  +Mochila mochila
+  +PilaCaidos caidos
+  +Sector sector_inicial
+  +bool desfibrilador
+  +crear_equipo()
+  +crear_mapa()
+  +equipo_vivo() : bool
+  +pelear(enemigos) : bool
+  +refugio()
+  +acertijo(pista)
+  +segunda_oportunidad(jefe) : bool
+  +recorrer_mapa() : bool
+  +jugar()
 }
 
 Personaje <|-- Rescatista
 Personaje <|-- Instructor
 Personaje <|-- Rider
 Personaje <|-- Enemigo
-Personaje <|-- Yeti
-
+Enemigo <|-- EnemigoInfectado
+Enemigo <|-- Yeti
 Item <|-- ItemConsumible
 Item <|-- ItemPermanente
+ItemConsumible <|-- ItemAntifungico
+ItemConsumible <|-- ItemReanimacion
 
+Personaje *-- "1" Estados : estados_alterados
+Juego "1" *-- "1" Mochila : mochila
+Juego "1" *-- "1" PilaCaidos : caidos
+Combate "1" *-- "1" TurnosCombate : orden_turnos
+Juego "1" *-- "3" Personaje : equipo
+Juego "1" *-- "1" Sector : sector_inicial
+Sector "1" --> "0..1" Sector : siguiente_sector
 Enemigo "1" --> "0..1" Item : algun_item
+Mochila "1" --> "*" Item : items
+PilaCaidos "1" --> "*" Personaje : caidos
+Combate "1" --> "3" Personaje : equipo
+Combate "1" --> "1..3" Enemigo : enemigos
+Combate "1" --> "1" Mochila : mochila
+Combate "1" --> "1" PilaCaidos : caidos
+Juego ..> Combate : crea
+Sector ..> Enemigo : genera
 Item ..> Personaje : modifica
-Combate "1" o-- "3" Personaje : equipo
-Combate "1" --> "1" Personaje : enemigo
-Sector "1" *-- "1" Emboscada : enemigos
-Emboscada "1" o-- "*" Personaje : contiene
-Sector "1" --> "1" Personaje : jefe
-Sector "1" --> "0..1" Sector : siguiente
-Main "1" o-- "3" Personaje : equipo
-Main "1" --> "1" Sector : sector_actual
-Main "1" *-- "1" Mochila : mochila
-Mochila "1" o-- "*" Item : contiene
-Main ..> Combate : crea
+ItemReanimacion ..> PilaCaidos : reanima
+@enduml
 
+@startuml InstanciasIniciales
+skinparam linetype ortho
+skinparam shadowing false
+
+note "Estado después de Juego.crear_equipo() y Juego.crear_mapa()" as estado
+
+object "juego : Juego" as juego {
+  desfibrilador = False
+}
+object "rescatista : Rescatista" as rescatista {
+  nombre = "Rescatista"
+  salud = 150
+  salud_max = 150
+  fuerza = 40
+  defensa = 28
+  nivel = 1
+  experiencia = 0
+}
+object "instructor : Instructor" as instructor {
+  nombre = "Instructor"
+  salud = 130
+  salud_max = 130
+  fuerza = 46
+  defensa = 23
+  nivel = 1
+  experiencia = 0
+}
+object "rider : Rider" as rider {
+  nombre = "Rider"
+  salud = 135
+  salud_max = 135
+  fuerza = 43
+  defensa = 21
+  nivel = 1
+  experiencia = 0
+}
+object "estados_rescatista : Estados" as estados_rescatista {
+  _estados = {}
+}
+object "estados_instructor : Estados" as estados_instructor {
+  _estados = {}
+}
+object "estados_rider : Estados" as estados_rider {
+  _estados = {}
+}
+object "mochila : Mochila" as mochila
+object "caidos : PilaCaidos" as caidos {
+  caidos = []
+}
+object "BOTIQUIN : ItemConsumible" as botiquin {
+  nombre = "Botiquín"
+  cantidad_salud = 40
+}
+object "ANTIFUNGICO : ItemAntifungico" as antifungico {
+  nombre = "Antifúngico"
+  cantidad_salud = 0
+}
+object "sector1 : Sector" as sector1 {
+  nombre = "Sendero del bosque muerto"
+  clave_enemigos = "pista_verde"
+  cantidad_encuentros = 3
+}
+object "sector2 : Sector" as sector2 {
+  nombre = "Campamento Minero Abandonado"
+  clave_enemigos = "pista_amarilla"
+  cantidad_encuentros = 3
+}
+object "sector3 : Sector" as sector3 {
+  nombre = "Cumbre del Glaciar Corrupto"
+  clave_enemigos = "pista_roja"
+  cantidad_encuentros = 3
+}
+
+estado .. juego
+juego -- rescatista : equipo[0]
+juego -- instructor : equipo[1]
+juego -- rider : equipo[2]
+rescatista -- estados_rescatista : estados_alterados
+instructor -- estados_instructor : estados_alterados
+rider -- estados_rider : estados_alterados
+juego -- mochila
+juego -- caidos
+juego -- sector1 : sector_inicial
+sector1 --> sector2 : siguiente_sector
+sector2 --> sector3 : siguiente_sector
+mochila -- botiquin : items[0], items[1]
+mochila -- antifungico : items[2]
 @enduml
